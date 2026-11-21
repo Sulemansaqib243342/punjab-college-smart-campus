@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
 import {
-  Shield,
-  Briefcase,
-  GraduationCap,
-  Lock,
-  Mail,
   Eye,
   EyeOff,
-  ArrowRight,
-  School,
-  CheckCircle,
+  CheckCircle2,
   AlertCircle,
+  ArrowLeft,
+  ShieldCheck,
 } from 'lucide-react';
 import { useStore } from '../../lib/store';
 import { Modal } from '../common/Modal';
-import { CollegeLogo } from '../common/CollegeLogo';
+import { CollegeLogo, CollegeLogoIcon } from '../common/CollegeLogo';
+import { UserRole } from '../../types';
 
 interface LoginPageProps {
   onLoginSuccess: () => void;
@@ -25,49 +21,34 @@ interface LoginPageProps {
 export const LoginPage: React.FC<LoginPageProps> = ({
   onLoginSuccess,
   onGoToLanding,
-  onGoToAdmission,
 }) => {
   const store = useStore();
-  const [email, setEmail] = useState('admin@smartcampus.com');
-  const [password, setPassword] = useState('Admin@123');
+
+  const [activeRole, setActiveRole] = useState<UserRole>('admin');
+  const [email, setEmail] = useState('admin@smartcampus.demo');
+  const [password, setPassword] = useState('Demo@123');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Forgot password state
+  // Forgot password modal state
   const [forgotModalOpen, setForgotModalOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotSent, setForgotSent] = useState(false);
 
-  const demoAccounts = [
-    {
-      role: 'admin',
-      label: 'Campus Admin',
-      email: 'admin@smartcampus.com',
-      pass: 'Admin@123',
-      name: 'Prof. Dr. Muhammad Asif',
-      icon: <Shield className="w-4 h-4 text-[#ea432a]" />,
-      bg: 'border-red-200 dark:border-red-900/50 hover:bg-red-50/50 dark:hover:bg-red-950/20',
-    },
-    {
-      role: 'teacher',
-      label: 'Faculty / Teacher',
-      email: 'teacher@smartcampus.com',
-      pass: 'Teacher@123',
-      name: 'Prof. Tariq Mahmood (Head CS)',
-      icon: <Briefcase className="w-4 h-4 text-[#232766]" />,
-      bg: 'border-blue-200 dark:border-blue-900/50 hover:bg-blue-50/50 dark:hover:bg-blue-950/20',
-    },
-    {
-      role: 'student',
-      label: 'Student Portal',
-      email: 'student@smartcampus.com',
-      pass: 'Student@123',
-      name: 'Muhammad Hamza Khan (11th ICS)',
-      icon: <GraduationCap className="w-4 h-4 text-emerald-600" />,
-      bg: 'border-emerald-200 dark:border-emerald-900/50 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/20',
-    },
-  ];
+  const roleCredentials: Record<UserRole, { email: string; pass: string }> = {
+    admin: { email: 'admin@smartcampus.demo', pass: 'Demo@123' },
+    teacher: { email: 'teacher@smartcampus.demo', pass: 'Demo@123' },
+    student: { email: 'student@smartcampus.demo', pass: 'Demo@123' },
+  };
+
+  const handleRoleChange = (role: UserRole) => {
+    setActiveRole(role);
+    setEmail(roleCredentials[role].email);
+    setPassword(roleCredentials[role].pass);
+    setError(null);
+  };
 
   const handleLogin = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -80,17 +61,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       if (res.success) {
         onLoginSuccess();
       } else {
-        setError('Invalid credentials. Please use one of the demo credentials below.');
+        setError('Invalid credentials. Please use demo credentials provided below.');
       }
-    }, 400);
+    }, 350);
   };
 
-  const fillDemoAccount = (demoEmail: string, demoPass: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPass);
-    setError(null);
-    store.loginWithEmailPassword(demoEmail, demoPass);
-    onLoginSuccess();
+  const handleSelectDemoRow = (role: UserRole) => {
+    handleRoleChange(role);
   };
 
   const handleForgotPasswordSubmit = (e: React.FormEvent) => {
@@ -105,176 +82,291 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#191c4d] via-[#232766] to-[#0f1133] flex flex-col justify-between p-4 sm:p-6 lg:p-8">
-      {/* Top Bar with Official Logo */}
-      <div className="flex items-center justify-between max-w-6xl w-full mx-auto">
-        <button
-          onClick={onGoToLanding}
-          className="cursor-pointer bg-white/95 px-4 py-2 rounded-2xl shadow-lg border border-white/30 hover:scale-102 transition-transform"
-        >
-          <CollegeLogo size="sm" showText={true} showCampus={true} />
-        </button>
-
-        <div className="flex items-center gap-3 text-xs">
-          <button
-            onClick={onGoToLanding}
-            className="text-slate-200 hover:text-white transition-colors hidden sm:block cursor-pointer font-semibold"
-          >
-            ← Back to Campus Home
-          </button>
-          <button
-            onClick={onGoToAdmission}
-            className="px-4 py-2 rounded-xl bg-[#ea432a] hover:bg-[#d6341d] text-white font-bold shadow-md transition-colors cursor-pointer"
-          >
-            Online Admission 2024-25
-          </button>
-        </div>
-      </div>
-
-      {/* Main Login Card */}
-      <div className="max-w-md w-full mx-auto my-8 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-        {/* Banner with Official Punjab Colleges Header */}
-        <div className="bg-[#232766] text-white p-6 sm:p-8 text-center relative overflow-hidden">
-          <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-[#ea432a]/20 blur-xl"></div>
-          <div className="absolute -left-8 -bottom-8 w-32 h-32 rounded-full bg-blue-400/20 blur-xl"></div>
-
-          <div className="inline-flex p-3 rounded-2xl bg-white mb-3 shadow-md">
-            <img
-              src="/punjab-colleges-logo.png"
-              alt="Punjab Colleges Logo"
-              className="h-12 w-auto object-contain"
-            />
+    <div className="min-h-screen bg-white flex items-center justify-center p-4 sm:p-6 lg:p-10 font-sans antialiased selection:bg-[#ea432a] selection:text-white">
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        {/* Left Side: Deep Navy Campus Card (Visible on Desktop) */}
+        <div className="hidden lg:flex lg:col-span-6 bg-[#16224f] text-white rounded-3xl p-10 flex-col justify-between min-h-[640px] shadow-xl relative overflow-hidden">
+          {/* Top Brand Tag */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
+              <CollegeLogoIcon size={18} />
+            </div>
+            <span className="font-extrabold text-sm tracking-tight text-white">Smart Campus</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">Smart Campus Portal</h2>
-          <p className="text-xs text-slate-300 mt-1 max-w-xs mx-auto">
-            Punjab Colleges, Minar-e-Pakistan Campus, Lahore
-          </p>
-          <div className="mt-3 inline-block px-3 py-0.5 rounded-full bg-[#ea432a] text-[10px] font-extrabold uppercase tracking-wider text-white shadow-xs">
-            Role-Based Access Control System
+
+          {/* Center Copy & Isometric Illustration */}
+          <div className="space-y-6 my-auto">
+            <div className="space-y-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-blue-200">
+                Your campus, connected.
+              </span>
+              <h2 className="text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+                Great futures. <br />
+                Smarter beginnings.
+              </h2>
+              <p className="text-xs text-slate-300">
+                A simpler way to learn, teach and lead.
+              </p>
+            </div>
+
+            {/* Embedded Isometric Campus Building Illustration Card */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-white/10 max-w-md">
+              <svg
+                viewBox="0 0 500 360"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-full h-auto drop-shadow-2xs"
+              >
+                {/* Courtyard Base */}
+                <ellipse cx="250" cy="265" rx="200" ry="80" fill="#f1f5f9" />
+                <ellipse cx="250" cy="265" rx="170" ry="65" fill="#e2e8f0" stroke="#cbd5e1" strokeWidth="2" />
+                
+                {/* Pathway */}
+                <path d="M 230 320 L 250 240 L 270 320 Z" fill="#cbd5e1" />
+                <ellipse cx="140" cy="270" rx="30" ry="12" fill="#dcfce7" />
+                <ellipse cx="360" cy="270" rx="30" ry="12" fill="#dcfce7" />
+
+                {/* Trees */}
+                <circle cx="130" cy="255" r="14" fill="#86efac" />
+                <circle cx="145" cy="250" r="16" fill="#4ade80" />
+                <rect x="136" y="265" width="4" height="10" fill="#78350f" />
+
+                <circle cx="370" cy="255" r="14" fill="#86efac" />
+                <circle cx="355" cy="250" r="16" fill="#4ade80" />
+                <rect x="360" y="265" width="4" height="10" fill="#78350f" />
+
+                {/* Main Red-Brick Collegiate Building */}
+                {/* Left Wing */}
+                <path d="M 120 170 L 210 135 L 210 230 L 120 260 Z" fill="#b91c1c" />
+                <path d="M 130 130 L 220 100 L 210 135 L 120 170 Z" fill="#cbd5e1" stroke="#94a3b8" />
+
+                {/* Right Wing */}
+                <path d="M 290 135 L 380 170 L 380 260 L 290 230 Z" fill="#991b1b" />
+                <path d="M 280 100 L 370 130 L 380 170 L 290 135 Z" fill="#cbd5e1" stroke="#94a3b8" />
+
+                {/* Central Tower */}
+                <path d="M 205 120 L 295 120 L 295 235 L 205 235 Z" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="2" />
+                <path d="M 225 235 L 225 195 Q 250 180 275 195 L 275 235 Z" fill="#1e293b" />
+                <rect x="235" y="205" width="30" height="30" fill="#38bdf8" opacity="0.7" />
+                <rect x="245" y="135" width="10" height="35" rx="2" fill="#ea432a" />
+
+                {/* Windows Grid */}
+                {[0, 1].map((row) =>
+                  [0, 1, 2].map((col) => (
+                    <rect
+                      key={`w-left-${row}-${col}`}
+                      x={135 + col * 24}
+                      y={180 + row * 28 - col * 6}
+                      width="14"
+                      height="18"
+                      rx="7"
+                      fill="#f8fafc"
+                      stroke="#cbd5e1"
+                    />
+                  ))
+                )}
+                {[0, 1].map((row) =>
+                  [0, 1, 2].map((col) => (
+                    <rect
+                      key={`w-right-${row}-${col}`}
+                      x={305 + col * 24}
+                      y={165 + row * 28 + col * 6}
+                      width="14"
+                      height="18"
+                      rx="7"
+                      fill="#f8fafc"
+                      stroke="#cbd5e1"
+                    />
+                  ))
+                )}
+
+                {/* Clock Tower Spire */}
+                <path d="M 235 120 L 250 40 L 265 120 Z" fill="#94a3b8" stroke="#64748b" />
+                <circle cx="250" cy="90" r="10" fill="#ffffff" stroke="#cbd5e1" strokeWidth="2" />
+                <line x1="250" y1="90" x2="250" y2="84" stroke="#0f172a" strokeWidth="1.5" />
+                <line x1="250" y1="90" x2="254" y2="90" stroke="#0f172a" strokeWidth="1.5" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Bottom Campus Identity */}
+          <div className="pt-4 border-t border-white/10">
+            <h4 className="font-extrabold text-xs text-white">Punjab College</h4>
+            <p className="text-[11px] text-blue-200">Minar-e-Pakistan Campus, Lahore</p>
           </div>
         </div>
 
-        {/* Form Content */}
-        <div className="p-6 sm:p-8">
+        {/* Right Side: Login Form Area (Desktop & Mobile) */}
+        <div className="lg:col-span-6 max-w-md w-full mx-auto space-y-6">
+          {/* Back to Campus Link */}
+          <div>
+            <button
+              onClick={onGoToLanding}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to campus</span>
+            </button>
+          </div>
+
+          {/* Mobile Header (Shown on mobile when left banner is hidden) */}
+          <div className="lg:hidden flex items-center gap-3 pb-2">
+            <div className="w-10 h-10 rounded-2xl bg-[#1b224b] text-white flex items-center justify-center shadow-xs">
+              <CollegeLogoIcon size={20} />
+            </div>
+            <div>
+              <div className="font-extrabold text-base text-slate-900 leading-tight">Smart Campus</div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                PUNJAB COLLEGE • LAHORE
+              </div>
+            </div>
+          </div>
+
+          {/* Heading */}
+          <div className="space-y-1">
+            <h1 className="text-3xl sm:text-4xl font-black text-[#1b224b] tracking-tight">
+              Welcome back.
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Sign in to your Smart Campus account.
+            </p>
+          </div>
+
+          {/* "I am a" Role Segmented Switcher */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700 block">I am a</label>
+            <div className="bg-slate-100 p-1 rounded-xl flex gap-1 text-xs font-semibold">
+              {(['admin', 'teacher', 'student'] as UserRole[]).map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => handleRoleChange(r)}
+                  className={`flex-1 py-2 text-center rounded-lg capitalize transition-all cursor-pointer ${
+                    activeRole === r
+                      ? 'bg-white text-slate-900 font-bold shadow-xs'
+                      : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Error Message */}
           {error && (
-            <div className="mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 flex items-center gap-2.5 text-xs text-[#ea432a]">
+            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-[#ea432a] flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
+          {/* Form */}
           <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                Portal Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@smartcampus.com"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-[#232766]"
-                />
-              </div>
+            {/* Email Field */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 block">Email address</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@smartcampus.demo"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#232766] focus:border-[#232766] transition-all"
+              />
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                  Password
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setForgotModalOpen(true)}
-                  className="text-xs font-semibold text-[#ea432a] hover:underline cursor-pointer"
-                >
-                  Forgot Password?
-                </button>
-              </div>
+            {/* Password Field */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 block">Password</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4" />
-                </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-[#232766]"
+                  placeholder="••••••••••••"
+                  className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#232766] focus:border-[#232766] transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
+            {/* Remember Me & Forgot Password Row */}
+            <div className="flex items-center justify-between text-xs pt-0.5">
+              <label className="flex items-center gap-2 text-slate-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded text-[#232766] focus:ring-[#232766] border-slate-300 cursor-pointer accent-[#232766]"
+                />
+                <span className="font-medium text-slate-700">Remember me</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setForgotModalOpen(true)}
+                className="font-bold text-[#1b224b] hover:text-[#ea432a] transition-colors cursor-pointer"
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 rounded-xl bg-[#232766] hover:bg-[#1a1d4d] text-white font-extrabold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-3.5 px-4 rounded-xl bg-[#1b224b] hover:bg-[#121633] text-white font-bold text-xs sm:text-sm shadow-md transition-all hover:scale-[1.01] cursor-pointer disabled:opacity-50"
             >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span>Sign In to Smart Campus</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
+              {loading ? 'Authenticating...' : 'Sign in to Smart Campus'}
             </button>
           </form>
 
-          {/* 1-Click Demo Accounts Section */}
-          <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800">
-            <div className="flex items-center justify-between mb-2.5">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                ⚡ 1-Click Demo Logins:
-              </span>
-              <span className="text-[10px] text-[#ea432a] font-bold">
-                Click any role to test
-              </span>
+          {/* Explore with a Demo Account Box */}
+          <div className="p-4 rounded-2xl bg-[#f0f4fd] border border-blue-100/90 space-y-2.5">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>Explore with a demo account</span>
             </div>
 
-            <div className="space-y-2">
-              {demoAccounts.map((acc) => (
-                <button
+            <div className="space-y-1.5 text-xs">
+              {(
+                [
+                  { role: 'admin', label: 'Admin', email: 'admin@smartcampus.demo' },
+                  { role: 'teacher', label: 'Teacher', email: 'teacher@smartcampus.demo' },
+                  { role: 'student', label: 'Student', email: 'student@smartcampus.demo' },
+                ] as { role: UserRole; label: string; email: string }[]
+              ).map((acc) => (
+                <div
                   key={acc.role}
-                  type="button"
-                  onClick={() => fillDemoAccount(acc.email, acc.pass)}
-                  className={`w-full p-2.5 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${acc.bg}`}
+                  onClick={() => handleSelectDemoRow(acc.role)}
+                  className={`flex items-center justify-between py-1 px-2 rounded-lg cursor-pointer transition-colors ${
+                    activeRole === acc.role
+                      ? 'bg-white shadow-2xs font-bold text-slate-900'
+                      : 'hover:bg-white/60 text-slate-600'
+                  }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-xs">
-                      {acc.icon}
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                        <span>{acc.label}</span>
-                        <span className="text-[10px] font-normal text-slate-500 dark:text-slate-400">
-                          ({acc.email})
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                        {acc.name} • <span className="font-mono text-[10px]">{acc.pass}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold text-[#232766] dark:text-blue-400">
-                    Log in →
-                  </span>
-                </button>
+                  <span className="w-16 font-semibold text-slate-800">{acc.label}</span>
+                  <span className="font-mono text-[11px] text-slate-600 truncate">{acc.email}</span>
+                </div>
               ))}
             </div>
+
+            <div className="pt-1.5 border-t border-blue-200/50 text-[11px] font-bold text-slate-800">
+              Password for all roles: <span className="font-mono text-[#ea432a]">Demo@123</span>
+            </div>
+          </div>
+
+          {/* Footer Notes */}
+          <div className="space-y-1 text-center text-[11px] text-slate-400 pt-2">
+            <p>Need access? Contact the campus administrator.</p>
+            <p className="text-[10px] text-slate-400">Protected access for the Punjab College community.</p>
           </div>
         </div>
       </div>
@@ -289,20 +381,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         {forgotSent ? (
           <div className="text-center py-4 space-y-2">
             <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle className="w-6 h-6" />
+              <CheckCircle2 className="w-6 h-6" />
             </div>
-            <h4 className="font-bold text-slate-900 dark:text-white text-base">Password Reset Link Sent</h4>
-            <p className="text-xs text-slate-600 dark:text-slate-300">
+            <h4 className="font-bold text-slate-900 text-base">Password Reset Link Sent</h4>
+            <p className="text-xs text-slate-600">
               A temporary password recovery link has been dispatched to <span className="font-semibold">{forgotEmail}</span>.
             </p>
           </div>
         ) : (
           <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed">
               Enter your registered college email address. Our campus authentication system will send a secure password reset token.
             </p>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                 College Email
               </label>
               <input
@@ -310,21 +402,21 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 required
                 value={forgotEmail}
                 onChange={(e) => setForgotEmail(e.target.value)}
-                placeholder="e.g. admin@smartcampus.com"
-                className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-hidden focus:ring-2 focus:ring-[#232766]"
+                placeholder="admin@smartcampus.demo"
+                className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-[#232766]"
               />
             </div>
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setForgotModalOpen(false)}
-                className="px-4 py-2 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer"
+                className="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-xs font-bold text-white bg-[#232766] hover:bg-[#191c4d] rounded-lg shadow-sm cursor-pointer"
+                className="px-4 py-2 text-xs font-bold text-white bg-[#232766] hover:bg-[#191c4d] rounded-lg shadow-xs cursor-pointer"
               >
                 Send Reset Link
               </button>
@@ -332,11 +424,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </form>
         )}
       </Modal>
-
-      {/* Footer */}
-      <div className="text-center text-xs text-slate-400 py-2">
-        <p>© {new Date().getFullYear()} Punjab Group of Colleges. Minar-e-Pakistan Campus Lahore. All rights reserved.</p>
-      </div>
     </div>
   );
 };

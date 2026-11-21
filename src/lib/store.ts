@@ -184,14 +184,20 @@ class AppStore {
   }
 
   loginWithEmailPassword(email: string, _password: string): { success: boolean; message: string } {
-    const profile = DEMO_PROFILES.find((p) => p.email.toLowerCase() === email.toLowerCase());
+    const cleanEmail = email.toLowerCase().trim();
+    const normalized = cleanEmail.replace('@smartcampus.demo', '@smartcampus.com');
+    const profile = DEMO_PROFILES.find(
+      (p) => p.email.toLowerCase() === cleanEmail || p.email.toLowerCase() === normalized
+    );
     if (profile) {
       this.setCurrentUser(profile);
       return { success: true, message: 'Logged in successfully' };
     }
     
     // Check if it's a student email from registered students
-    const std = this.students.find((s) => s.email.toLowerCase() === email.toLowerCase());
+    const std = this.students.find(
+      (s) => s.email.toLowerCase() === cleanEmail || s.email.toLowerCase() === normalized
+    );
     if (std) {
       const studentProfile: UserProfile = {
         id: std.id,

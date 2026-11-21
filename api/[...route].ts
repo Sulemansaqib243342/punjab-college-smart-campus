@@ -36,7 +36,12 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
           return res.status(400).json({ error: 'Email and password required' });
         }
 
-        const profile = db.profiles.find((p) => p.email.toLowerCase() === email.toLowerCase());
+        const cleanEmail = email.toLowerCase().trim();
+        const normalized = cleanEmail.replace('@smartcampus.demo', '@smartcampus.com');
+
+        const profile = db.profiles.find(
+          (p) => p.email.toLowerCase() === cleanEmail || p.email.toLowerCase() === normalized
+        );
         if (profile) {
           return res.status(200).json({
             success: true,
