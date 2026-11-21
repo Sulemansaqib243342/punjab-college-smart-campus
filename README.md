@@ -1,20 +1,39 @@
 # Smart Campus - College Management System
 ### Punjab College, Minar-e-Pakistan Campus, Lahore
 
-A complete, production-grade College Management System built with **React, TypeScript, Tailwind CSS, shadcn/ui, Lucide Icons, Recharts, and Supabase (PostgreSQL with RLS)**.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Sulemansaqib243342/punjab-college-smart-campus)
+[![Live on GitHub Pages](https://img.shields.io/badge/Demo-GitHub%20Pages-232766?logo=github&style=flat-square)](https://sulemansaqib243342.github.io/punjab-college-smart-campus/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-ea432a?style=flat-square)](LICENSE)
+
+A complete, production-grade College Management System built with **React, TypeScript, Tailwind CSS, shadcn/ui, Lucide Icons, Recharts, Vercel Serverless REST API, and Supabase (PostgreSQL with RLS)**.
 
 ---
 
-## 🏛️ Campus Identity
+## 🌐 Live Deployments & Instant Setup
+
+- **GitHub Repository**: [https://github.com/Sulemansaqib243342/punjab-college-smart-campus](https://github.com/Sulemansaqib243342/punjab-college-smart-campus)
+- **Live Demo (GitHub Pages)**: [https://sulemansaqib243342.github.io/punjab-college-smart-campus/](https://sulemansaqib243342.github.io/punjab-college-smart-campus/)
+- **Deploy to Vercel in 1-Click**:
+  Click the button below to deploy this repository to Vercel instantly with zero configuration needed:
+
+  [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Sulemansaqib243342/punjab-college-smart-campus)
+
+---
+
+## 🏛️ Campus Identity & Official Branding
+
 - **Institution**: Punjab College, Minar-e-Pakistan Campus, Lahore (Affiliated with BISE Lahore)
-- **Motto**: *"The Step to Success"*
-- **Color Theme**: Navy Blue (`#0e244d`) + Crimson Red (`#c01823`) + Gold & Crisp White
+- **Official Brand Colors**:
+  - **Deep Navy**: `#232766` (Primary Identity, Sidebar, Navigation, Transcripts)
+  - **Torch Red-Orange**: `#ea432a` (Accents, CTA, Badges, Alert notices)
+  - **Supporting Colors**: Crisp White, Slate, Emerald Green
+- **Official Insignia**: Nested geometric book leaves with ascending torch flame and typography.
 
 ---
 
 ## 🔑 Demo Accounts & Role-Based Access Control (RBAC)
 
-The login screen provides **1-click quick-fill buttons** for each role, as well as a quick role switcher in the navbar:
+The login screen provides **1-click quick-fill demo cards** for each role, as well as a quick role switcher in the navbar:
 
 | Role | Email | Password | Name & Title |
 | :--- | :--- | :--- | :--- |
@@ -24,10 +43,36 @@ The login screen provides **1-click quick-fill buttons** for each role, as well 
 
 ---
 
+## ⚡ Serverless REST API Backend (`/api/*`)
+
+The project features a full **Vercel Serverless REST API** architecture with typed endpoints:
+
+| Endpoint | Method(s) | Description |
+| :--- | :--- | :--- |
+| `/api/health` | `GET` | Health check and backend connection status |
+| `/api/auth/login` | `POST` | Authenticate user, verify credentials & return session |
+| `/api/admissions` | `GET, POST` | List admission applications or submit new online application |
+| `/api/admissions/approve` | `POST` | Approve application, generate roll number & fee voucher |
+| `/api/students` | `GET, POST, PUT, DELETE` | Full CRUD for student directory with filters & search |
+| `/api/students/:id` | `GET, PUT, DELETE` | Direct individual student record management |
+| `/api/teachers` | `GET, POST, PUT, DELETE` | Full CRUD for faculty directory and class assignments |
+| `/api/teachers/:id` | `GET, PUT, DELETE` | Direct individual teacher profile management |
+| `/api/attendance` | `GET, POST` | Retrieve attendance registers or batch mark class attendance |
+| `/api/exams` | `GET, POST` | List academic exams or schedule new exam series |
+| `/api/marks` | `GET, POST` | Retrieve marks or batch enter subject marks with validation |
+| `/api/results` | `GET` | Calculate exam results, grades (A+ to F), and positions/ranks |
+| `/api/fees` | `GET, POST` | Fee vouchers, defaulters list, and record fee payments |
+| `/api/timetable` | `GET, POST, DELETE` | Weekly schedule matrix by class or faculty member |
+| `/api/materials` | `GET, POST, DELETE` | Upload and download study resources and notes |
+| `/api/notices` | `GET, POST, DELETE` | Campus broadcast circulars and priority advisories |
+| `/api/analytics/report` | `GET` | Generate AI-driven performance diagnostic report for a student |
+
+---
+
 ## 🚀 Key Modules & Functional Features
 
 1. **Student Admission & Registration**:
-   - Public & internal online admission form (Name, Father Name, CNIC/B-Form, DOB, Gender, Phone, Email, Address, Matric marks, Board, Group selection: Pre-Medical / Pre-Engineering / ICS / Commerce / Arts, Photo preview).
+   - Public & internal online admission form (Name, Father Name, CNIC/B-Form, DOB, Gender, Phone, Email, Address, Matric marks, Board, Group: Pre-Medical / Pre-Engineering / ICS / Commerce / Arts, Photo upload).
    - Admin review queue with 1-click Approve / Reject.
    - Upon approval, automatically assigns a unique roll number (e.g., `PCL-24-151`), enrols student into class, and creates a fee voucher. Confetti celebration animation!
 
@@ -75,31 +120,53 @@ The login screen provides **1-click quick-fill buttons** for each role, as well 
 
 ---
 
-## 🗄️ Database Schema & Supabase Setup
+## 🗄️ Supabase PostgreSQL Setup & Environment Variables
 
-The application features a dual-mode engine:
-1. **Out of the box**: Runs with an offline reactive, persistent LocalStorage store loaded with the realistic Pakistani dataset (65+ students, 11 teachers, 30 days attendance, 2 exams with marks, fees, timetable, 8 notices).
-2. **With Supabase**:
-   - Create a project on [Supabase](https://supabase.com).
-   - In Supabase SQL Editor, run `supabase/schema.sql` (defines `profiles`, `user_roles`, `students`, `teachers`, `classes`, `subjects`, `attendance`, `exams`, `marks`, `fees`, `fee_structures`, `timetable`, `study_materials`, `notices`, `admissions`, and complete Row Level Security policies).
-   - Run `supabase/seed.sql` for initial seed rows.
-   - Add your credentials to `.env`:
-     ```env
-     VITE_SUPABASE_URL=https://your-project.supabase.co
-     VITE_SUPABASE_ANON_KEY=your-anon-key
-     ```
+When deploying to Vercel or connecting to your real Supabase database:
+
+1. Create a project on [Supabase](https://supabase.com).
+2. Go to **SQL Editor** in Supabase and run:
+   - `supabase/schema.sql`: Sets up normalized tables (`profiles`, `user_roles`, `students`, `teachers`, `classes`, `subjects`, `attendance`, `exams`, `marks`, `fees`, `fee_structures`, `timetable`, `study_materials`, `notices`, `admissions`) and Row Level Security (RLS).
+   - `supabase/seed.sql`: Populates the database with initial demo data.
+3. Configure your Environment Variables in Vercel project settings or `.env`:
+   ```env
+   # Frontend variables
+   VITE_SUPABASE_URL=https://your-project.supabase.co
+   VITE_SUPABASE_ANON_KEY=your-anon-public-key
+
+   # Backend Serverless variables
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+   ```
 
 ---
 
-## 🛠️ Installation & Running Locally
+## 🛠️ Local Development
 
 ```bash
+# Clone the repository
+git clone https://github.com/Sulemansaqib243342/punjab-college-smart-campus.git
+cd punjab-college-smart-campus
+
 # Install dependencies
 npm install
 
-# Start Vite development server
+# Start Vite dev server
 npm run dev
 
-# Run production build check
+# Run production build
 npm run build
 ```
+
+---
+
+## 🚢 Deploying to Vercel via CLI
+
+```bash
+# Log in to Vercel CLI
+npx vercel login
+
+# Deploy to production
+npx vercel --prod
+```
+Or simply connect your GitHub repository in the [Vercel Dashboard](https://vercel.com/new). Every push to `main` will automatically build and deploy!

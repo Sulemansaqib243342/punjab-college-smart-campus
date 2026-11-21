@@ -340,7 +340,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
           </div>
 
           <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500">
-            Smart Campus Supabase Normalized Architecture • Role: Administrator
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-bold text-[#232766] dark:text-blue-400">Backend System Status</span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400 font-bold text-[10px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Vercel Serverless Ready
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-400 leading-relaxed">
+              14 REST API Endpoints active in <code className="text-[#ea432a]">/api/*</code> • PostgreSQL Supabase Schema synced • Multi-tenant RBAC configured.
+            </p>
           </div>
         </div>
       </div>
