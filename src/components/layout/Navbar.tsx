@@ -11,6 +11,7 @@ import {
   ChevronDown,
   RotateCcw,
   UserCheck,
+  Search,
 } from 'lucide-react';
 import { useStore } from '../../lib/store';
 import { UserRole } from '../../types';
@@ -76,27 +77,41 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Center: Quick Role Switcher (For high convenience during grading / demo) */}
-        <div className="hidden md:flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 text-xs font-semibold">
-          <span className="px-2 text-slate-500 dark:text-slate-400 text-[11px] flex items-center gap-1 font-bold">
-            <UserCheck className="w-3.5 h-3.5 text-[#ea432a]" /> Switch Role:
-          </span>
-          {(['admin', 'teacher', 'student'] as UserRole[]).map((r) => (
-            <button
-              key={r}
-              onClick={() => {
-                store.switchRole(r);
-                setActiveView('dashboard');
-              }}
-              className={`px-3 py-1 rounded-lg capitalize transition-all cursor-pointer ${
-                role === r
-                  ? 'bg-[#232766] text-white shadow-xs font-bold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-[#232766] dark:hover:text-white'
-              }`}
-            >
-              {r}
-            </button>
-          ))}
+        {/* Center: Search Bar & Role Switcher */}
+        <div className="hidden lg:flex items-center gap-3">
+          <div className="relative w-64 xl:w-80">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search students, classes, anything..."
+              className="w-full pl-10 pr-12 py-1.5 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-slate-50/70 dark:bg-[#11182c] text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#232766]"
+            />
+            <span className="absolute right-2.5 top-1.5 px-1.5 py-0.2 rounded-md bg-slate-200/60 dark:bg-slate-800 text-[10px] font-mono font-bold text-slate-400 border border-slate-300/40 dark:border-slate-700">
+              ⌘ K
+            </span>
+          </div>
+
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 text-xs font-semibold">
+            <span className="px-2 text-slate-500 dark:text-slate-400 text-[11px] flex items-center gap-1 font-bold">
+              <UserCheck className="w-3.5 h-3.5 text-[#ea432a]" />
+            </span>
+            {(['admin', 'teacher', 'student'] as UserRole[]).map((r) => (
+              <button
+                key={r}
+                onClick={() => {
+                  store.switchRole(r);
+                  setActiveView('dashboard');
+                }}
+                className={`px-2.5 py-1 rounded-lg capitalize transition-all cursor-pointer text-xs ${
+                  role === r
+                    ? 'bg-[#232766] text-white shadow-xs font-bold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-[#232766] dark:hover:text-white'
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Right Action Icons & Profile */}
@@ -179,25 +194,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center gap-2 p-1.5 pl-2 sm:pl-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all cursor-pointer"
+              className="flex items-center gap-2 p-1.5 pl-2 sm:pl-2.5 rounded-xl border border-slate-200/90 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all cursor-pointer"
             >
-              <div className="hidden sm:block text-right">
-                <span className="text-xs font-bold text-slate-900 dark:text-white block leading-tight truncate max-w-[120px]">
-                  {currentUser?.full_name || 'Guest User'}
+              <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-[#1b224b] dark:text-blue-300 flex items-center justify-center shrink-0">
+                <Shield className="w-4 h-4 text-[#1b224b] dark:text-blue-400" />
+              </div>
+              <div className="hidden sm:block text-left">
+                <span className="text-xs font-bold text-slate-900 dark:text-white block leading-tight">
+                  Campus Admin
                 </span>
-                <span
-                  className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.2 rounded border mt-0.5 ${roleColors[role].badge}`}
-                >
-                  {roleColors[role].icon}
-                  {roleColors[role].label}
+                <span className="text-[10px] text-slate-400 block">
+                  Administrator
                 </span>
               </div>
-              <img
-                src={currentUser?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
-                alt={currentUser?.full_name || 'Avatar'}
-                className="w-9 h-9 rounded-lg object-cover ring-2 ring-[#ea432a]/40"
-              />
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
             </button>
 
             {showProfileMenu && (

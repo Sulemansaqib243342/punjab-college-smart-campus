@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { LayoutGrid, Users, CreditCard, Menu } from 'lucide-react';
 import { useStore } from './lib/store';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
@@ -92,7 +93,7 @@ export function App() {
   const role = currentUser?.role || 'admin';
 
   return (
-    <div className="min-h-screen bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors">
+    <div className="min-h-screen bg-[#f8faff] dark:bg-[#0c1120] text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors">
       {/* Top Navbar */}
       <Navbar
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -114,7 +115,7 @@ export function App() {
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0 overflow-y-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-20 md:pb-8 min-w-0 overflow-y-auto">
           {activeView === 'dashboard' && (
             <>
               {role === 'admin' && (
@@ -196,6 +197,65 @@ export function App() {
           onClose={() => setShowFeeVoucherModal(false)}
         />
       )}
+
+      {/* Mobile Bottom Navigation Bar (Matching Mobile Mockup) */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0d1326]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800/80 py-2 px-3 flex items-center justify-around md:hidden">
+        <button
+          type="button"
+          onClick={() => setActiveView('dashboard')}
+          className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
+            activeView === 'dashboard'
+              ? 'text-[#1b224b] dark:text-white'
+              : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+          }`}
+        >
+          <div className="w-5 h-5 flex items-center justify-center">
+            <LayoutGrid className="w-4 h-4" />
+          </div>
+          <span>Overview</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveView('students')}
+          className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
+            activeView === 'students'
+              ? 'text-[#1b224b] dark:text-white'
+              : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+          }`}
+        >
+          <div className="w-5 h-5 flex items-center justify-center">
+            <Users className="w-4 h-4" />
+          </div>
+          <span>Students</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveView('fees')}
+          className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
+            activeView === 'fees'
+              ? 'text-[#1b224b] dark:text-white'
+              : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+          }`}
+        >
+          <div className="w-5 h-5 flex items-center justify-center">
+            <CreditCard className="w-4 h-4" />
+          </div>
+          <span>Fees</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setIsSidebarOpen(true)}
+          className="flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+        >
+          <div className="w-5 h-5 flex items-center justify-center">
+            <Menu className="w-4 h-4" />
+          </div>
+          <span>More</span>
+        </button>
+      </nav>
     </div>
   );
 }
