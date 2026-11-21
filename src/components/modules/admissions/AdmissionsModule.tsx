@@ -51,6 +51,8 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
 
   // Wizard Step State (1 to 5)
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [submittedAppNumber, setSubmittedAppNumber] = useState<string>('PC-2026-0142');
 
   // Selected application for detail modal
   const [selectedApp, setSelectedApp] = useState<AdmissionApplication | null>(null);
@@ -103,6 +105,8 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
       return;
     }
 
+    const appNumber = 'PC-2026-0142';
+    setSubmittedAppNumber(appNumber);
     const fullName = `${formData.firstName} ${formData.lastName}`.trim();
 
     store.submitAdmission({
@@ -122,12 +126,17 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
       photo_url: formData.photoUrl,
     });
 
-    confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
-    setSuccessToast(`Application for ${fullName} submitted successfully! Status: Under Merit Review.`);
-    setTimeout(() => setSuccessToast(null), 6000);
+    confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+    setIsSubmitted(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
+  const handleBackToHome = () => {
+    setIsSubmitted(false);
     setCurrentStep(1);
-    if (!isPublicPage) {
+    if (isPublicPage && onGoToLanding) {
+      onGoToLanding();
+    } else {
       setActiveTab('queue');
     }
   };
@@ -241,8 +250,124 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
       {/* MODE 1: ONLINE ADMISSION FORM (5-STEP WIZARD MATCHING MOCKUP) */}
       {/* ============================================================== */}
       {(activeTab === 'apply' || isPublicPage) && (
-        <div className="space-y-6">
-          {/* Page Title & Subtitle */}
+        <>
+          {isSubmitted ? (
+            <div className="max-w-2xl mx-auto py-4 sm:py-6 animate-in fade-in duration-300 space-y-6">
+              <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-12 shadow-xs text-center space-y-7 sm:space-y-8">
+                {/* Top Success Circle */}
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
+                  <Check className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2.5]" />
+                </div>
+
+                {/* Heading & Subheading */}
+                <div className="space-y-2">
+                  <h2 className="text-2xl sm:text-4xl font-black text-[#1b224b] tracking-tight">
+                    You’re one step closer.
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-sm sm:max-w-md mx-auto">
+                    Your application has been submitted to<br />
+                    Punjab College, Minar-e-Pakistan Campus, Lahore.
+                  </p>
+                </div>
+
+                {/* Application Number Box */}
+                <div className="bg-[#f0f4fd] rounded-2xl p-5 sm:p-6 text-center space-y-1.5 border border-blue-100/60 max-w-md mx-auto">
+                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-slate-400 block">
+                    YOUR APPLICATION NUMBER
+                  </span>
+                  <div className="font-mono font-black text-2xl sm:text-3xl text-[#1b224b] tracking-wider">
+                    {submittedAppNumber}
+                  </div>
+                </div>
+
+                {/* What happens next? */}
+                <div className="space-y-4 text-left max-w-md mx-auto pt-1 sm:pt-2">
+                  <h3 className="font-black text-base sm:text-lg text-[#1b224b]">
+                    What happens next?
+                  </h3>
+
+                  <div className="space-y-4">
+                    {/* Item 1 */}
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                        <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <h4 className="font-bold text-xs sm:text-sm text-[#1b224b]">
+                          Application received
+                        </h4>
+                        <p className="text-xs text-slate-400">
+                          A confirmation is on its way to your email.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Item 2 */}
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
+                        2
+                      </div>
+                      <div className="space-y-0.5">
+                        <h4 className="font-bold text-xs sm:text-sm text-[#1b224b]">
+                          Admissions team review
+                        </h4>
+                        <p className="text-xs text-slate-400">
+                          Allow 2–3 working days for an update.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Item 3 */}
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
+                        3
+                      </div>
+                      <div className="space-y-0.5">
+                        <h4 className="font-bold text-xs sm:text-sm text-[#1b224b]">
+                          Your next steps
+                        </h4>
+                        <p className="text-xs text-slate-400">
+                          We'll contact you about your campus visit.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-2 max-w-md mx-auto">
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="order-1 sm:order-1 flex-1 py-3 px-6 rounded-xl bg-[#1b224b] hover:bg-[#121633] text-white text-xs sm:text-sm font-bold shadow-md transition-all text-center cursor-pointer"
+                  >
+                    Download application
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleBackToHome}
+                    className="order-2 sm:order-2 flex-1 py-3 px-6 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold transition-colors text-center cursor-pointer"
+                  >
+                    Back to home
+                  </button>
+                </div>
+
+                {/* Footer Question */}
+                <p className="text-xs text-slate-400 pt-1 text-center">
+                  Questions? Visit our campus admissions office.
+                </p>
+              </div>
+
+              {/* Confidentiality Footer */}
+              <div className="text-center text-[11px] text-slate-400 pt-2">
+                <span className="sm:hidden">Your information is secure and confidential.</span>
+                <span className="hidden sm:inline">Your information is secure and confidential. • © 2026 Punjab College</span>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Page Title & Subtitle */}
           <div className="space-y-1">
             <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#ea432a]">
               ADMISSIONS • SESSION 2026–27
@@ -1149,6 +1274,8 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
             Your information is secure and confidential. • © 2026 Punjab College
           </div>
         </div>
+          )}
+        </>
       )}
 
       {/* ============================================================== */}
