@@ -63,10 +63,14 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
     gender: 'Female' as 'Male' | 'Female',
     cnic: '35202-1234567-8',
     phone: '0300 1234567',
-    email: 'ayesha@',
+    email: 'ayesha@example.com',
     address: 'Shahdara, Lahore',
     fatherName: 'Muhammad Ahmed',
-    previousMarks: 980,
+    educationBoard: 'BISE Lahore',
+    institution: 'Govt. Girls High School, Lahore',
+    passingYear: '2026',
+    matricRollNo: '2026-08421',
+    previousMarks: 1024,
     totalMarks: 1100,
     previousBoard: 'BISE Lahore',
     groupName: 'ICS' as AcademicGroup,
@@ -459,79 +463,149 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
                 </div>
               )}
 
-              {/* STEP 2: ACADEMIC INFO */}
+              {/* STEP 2: ACADEMIC INFO (EXACT MOCKUP) */}
               {currentStep === 2 && (
                 <div className="space-y-6">
+                  {/* Step Header */}
                   <div className="space-y-1">
                     <h2 className="text-xl sm:text-2xl font-black text-[#1b224b] tracking-tight">
-                      Academic Background
+                      Your academic journey.
                     </h2>
                     <p className="text-xs text-slate-500">
-                      Enter your matriculation / O-Level result credentials.
+                      Tell us about your matriculation results.
                     </p>
                   </div>
 
+                  {/* Form Fields Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Education board */}
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-700 block">Matric Marks Obtained *</label>
-                      <input
-                        type="number"
-                        min={330}
-                        max={1100}
-                        value={formData.previousMarks}
-                        onChange={(e) => setFormData({ ...formData, previousMarks: Number(e.target.value) })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 font-mono font-bold"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-700 block">Total Marks</label>
-                      <input
-                        type="number"
-                        disabled
-                        value={formData.totalMarks}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-100 text-xs sm:text-sm text-slate-500 font-mono cursor-not-allowed"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-700 block">Calculated Percentage</label>
-                      <div className="px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-bold font-mono">
-                        {percentage}% (Eligible for Merit Scholarship)
+                      <label className="text-xs font-bold text-slate-700 block">Education board *</label>
+                      <div className="relative">
+                        <select
+                          value={formData.educationBoard}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              educationBoard: e.target.value,
+                              previousBoard: e.target.value,
+                            })
+                          }
+                          className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-900 font-medium focus:outline-hidden focus:ring-2 focus:ring-[#232766] appearance-none"
+                        >
+                          <option value="BISE Lahore">BISE Lahore</option>
+                          <option value="BISE Gujranwala">BISE Gujranwala</option>
+                          <option value="BISE Faisalabad">BISE Faisalabad</option>
+                          <option value="BISE Rawalpindi">BISE Rawalpindi</option>
+                          <option value="BISE Multan">BISE Multan</option>
+                          <option value="Federal Board (FBISE)">Federal Board (FBISE)</option>
+                          <option value="Cambridge O-Level">Cambridge O-Level</option>
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
                       </div>
                     </div>
 
+                    {/* School / institution */}
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-700 block">Examination Board *</label>
-                      <select
-                        value={formData.previousBoard}
-                        onChange={(e) => setFormData({ ...formData, previousBoard: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-900 font-medium"
-                      >
-                        <option value="BISE Lahore">BISE Lahore</option>
-                        <option value="BISE Gujranwala">BISE Gujranwala</option>
-                        <option value="BISE Faisalabad">BISE Faisalabad</option>
-                        <option value="BISE Rawalpindi">BISE Rawalpindi</option>
-                        <option value="Federal Board (FBISE)">Federal Board (FBISE)</option>
-                        <option value="Cambridge O-Level">Cambridge O-Level</option>
-                      </select>
+                      <label className="text-xs font-bold text-slate-700 block">School / institution *</label>
+                      <input
+                        type="text"
+                        value={formData.institution}
+                        onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
+                        placeholder="Govt. Girls High School, Lahore"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-[#232766]"
+                      />
+                    </div>
+
+                    {/* Passing year */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 block">Passing year *</label>
+                      <div className="relative">
+                        <select
+                          value={formData.passingYear}
+                          onChange={(e) => setFormData({ ...formData, passingYear: e.target.value })}
+                          className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-900 font-medium focus:outline-hidden focus:ring-2 focus:ring-[#232766] appearance-none"
+                        >
+                          <option value="2026">2026</option>
+                          <option value="2025">2025</option>
+                          <option value="2024">2024</option>
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* Matric roll number */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 block">Matric roll number *</label>
+                      <input
+                        type="text"
+                        value={formData.matricRollNo}
+                        onChange={(e) => setFormData({ ...formData, matricRollNo: e.target.value })}
+                        placeholder="2026-08421"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-900 font-mono focus:outline-hidden focus:ring-2 focus:ring-[#232766]"
+                      />
+                    </div>
+
+                    {/* Marks obtained */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 block">Marks obtained *</label>
+                      <input
+                        type="number"
+                        min={330}
+                        max={formData.totalMarks}
+                        value={formData.previousMarks}
+                        onChange={(e) => setFormData({ ...formData, previousMarks: Number(e.target.value) })}
+                        placeholder="1024"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-900 font-mono font-bold focus:outline-hidden focus:ring-2 focus:ring-[#232766]"
+                      />
+                    </div>
+
+                    {/* Total marks */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 block">Total marks *</label>
+                      <input
+                        type="number"
+                        value={formData.totalMarks}
+                        onChange={(e) => setFormData({ ...formData, totalMarks: Number(e.target.value) })}
+                        placeholder="1100"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-900 font-mono font-bold focus:outline-hidden focus:ring-2 focus:ring-[#232766]"
+                      />
                     </div>
                   </div>
 
-                  <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-3">
+                  {/* Calculated Percentage Card */}
+                  <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                      <ShieldCheck className="w-5 h-5 text-emerald-700" />
+                    </div>
+                    <div>
+                      <div className="text-xs sm:text-sm font-bold text-emerald-900">
+                        {percentage}% &nbsp;•&nbsp; {percentage >= 80 ? 'Excellent work!' : 'Good standing!'}
+                      </div>
+                      <div className="text-[11px] text-emerald-700">Calculated from your marks.</div>
+                    </div>
+                  </div>
+
+                  {/* Form Footer Actions */}
+                  <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                     <button
                       type="button"
                       onClick={() => setCurrentStep(1)}
-                      className="px-5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                      className="order-2 sm:order-1 px-6 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors text-center cursor-pointer"
                     >
-                      ← Back to personal info
+                      Back
                     </button>
+
+                    <span className="order-3 sm:order-2 text-center text-xs text-slate-400 font-medium">
+                      Draft • Not submitted
+                    </span>
+
                     <button
                       type="button"
                       onClick={() => setCurrentStep(3)}
-                      className="px-6 py-2.5 rounded-xl bg-[#1b224b] hover:bg-[#121633] text-white text-xs sm:text-sm font-bold shadow-md cursor-pointer"
+                      className="order-1 sm:order-3 px-6 py-2.5 rounded-xl bg-[#1b224b] hover:bg-[#121633] text-white text-xs sm:text-sm font-bold shadow-md transition-all text-center cursor-pointer"
                     >
-                      Continue to group selection
+                      Continue to groups
                     </button>
                   </div>
                 </div>
