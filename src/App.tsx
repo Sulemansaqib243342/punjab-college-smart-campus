@@ -77,30 +77,13 @@ export function App() {
   // 3. Public Admission Form Screen (Accessible without login)
   if (screen === 'public_admission') {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 sm:p-6 lg:p-8">
-        <div className="max-w-5xl mx-auto mb-6 flex items-center justify-between">
-          <button
-            onClick={() => setScreen('landing')}
-            className="flex items-center gap-2 cursor-pointer"
-          >
-            <CollegeLogo size="sm" showCampus={true} />
-          </button>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setScreen('landing')}
-              className="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer"
-            >
-              Back to Home
-            </button>
-            <button
-              onClick={() => setScreen('login')}
-              className="px-4 py-2 rounded-xl bg-[#232766] hover:bg-[#1a1d4d] text-white text-xs font-bold shadow-md cursor-pointer"
-            >
-              Portal Login
-            </button>
-          </div>
-        </div>
-        <AdmissionsModule initialTab="apply" />
+      <div className="min-h-screen bg-[#f8fafc] p-4 sm:p-6 lg:p-10">
+        <AdmissionsModule
+          initialTab="apply"
+          isPublicPage={true}
+          onGoToLogin={() => setScreen('login')}
+          onGoToLanding={() => setScreen('landing')}
+        />
       </div>
     );
   }
