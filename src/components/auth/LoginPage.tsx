@@ -4,12 +4,12 @@ import {
   EyeOff,
   CheckCircle2,
   AlertCircle,
-  ArrowLeft,
   ShieldCheck,
+  Check,
 } from 'lucide-react';
 import { useStore } from '../../lib/store';
 import { Modal } from '../common/Modal';
-import { CollegeLogo, CollegeLogoIcon } from '../common/CollegeLogo';
+import { CollegeLogoIcon } from '../common/CollegeLogo';
 import { UserRole } from '../../types';
 
 interface LoginPageProps {
@@ -63,7 +63,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       } else {
         setError('Invalid credentials. Please use demo credentials provided below.');
       }
-    }, 350);
+    }, 300);
   };
 
   const handleSelectDemoRow = (role: UserRole) => {
@@ -82,10 +82,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4 sm:p-6 lg:p-10 font-sans antialiased selection:bg-[#ea432a] selection:text-white">
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        {/* Left Side: Deep Navy Campus Card (Visible on Desktop) */}
-        <div className="hidden lg:flex lg:col-span-6 bg-[#16224f] text-white rounded-3xl p-10 flex-col justify-between min-h-[640px] shadow-xl relative overflow-hidden">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4 sm:p-6 lg:p-12 font-sans antialiased selection:bg-[#ea432a] selection:text-white">
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+        {/* Left Side: Deep Navy Campus Card (Exact Mockup) */}
+        <div className="hidden lg:flex lg:col-span-6 bg-[#122353] text-white rounded-3xl p-8 sm:p-10 flex-col justify-between min-h-[660px] shadow-xl relative overflow-hidden">
           {/* Top Brand Tag */}
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
@@ -95,60 +95,71 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
 
           {/* Center Copy & Isometric Illustration */}
-          <div className="space-y-6 my-auto">
-            <div className="space-y-2">
+          <div className="space-y-5 my-auto">
+            <div className="space-y-1.5">
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-blue-200">
-                Your campus, connected.
+                YOUR CAMPUS, CONNECTED.
               </span>
               <h2 className="text-3xl lg:text-4xl font-black tracking-tight leading-tight">
                 Great futures. <br />
                 Smarter beginnings.
               </h2>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-blue-200/80">
                 A simpler way to learn, teach and lead.
               </p>
             </div>
 
-            {/* Embedded Isometric Campus Building Illustration Card */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-white/10 max-w-md">
+            {/* Embedded Isometric Campus Building Illustration Card with Minar-e-Pakistan */}
+            <div className="bg-[#f4f6f9] rounded-2xl p-4 shadow-sm border border-white/10 max-w-md">
               <svg
-                viewBox="0 0 500 360"
+                viewBox="0 0 500 370"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-full h-auto drop-shadow-2xs"
               >
+                {/* Minar-e-Pakistan in Background (Tower Silhouette) */}
+                <path
+                  d="M 346 220 L 348 85 L 350 40 L 352 85 L 354 220 Z"
+                  fill="#cbd5e1"
+                  opacity="0.55"
+                />
+                <ellipse cx="350" cy="85" rx="7" ry="2.5" fill="#94a3b8" opacity="0.6" />
+                <ellipse cx="350" cy="135" rx="9" ry="3.5" fill="#94a3b8" opacity="0.6" />
+                <ellipse cx="350" cy="185" rx="12" ry="4.5" fill="#94a3b8" opacity="0.6" />
+                <path d="M 349.5 40 L 350 18 L 350.5 40 Z" stroke="#64748b" strokeWidth="1.5" opacity="0.7" />
+
                 {/* Courtyard Base */}
-                <ellipse cx="250" cy="265" rx="200" ry="80" fill="#f1f5f9" />
-                <ellipse cx="250" cy="265" rx="170" ry="65" fill="#e2e8f0" stroke="#cbd5e1" strokeWidth="2" />
-                
-                {/* Pathway */}
-                <path d="M 230 320 L 250 240 L 270 320 Z" fill="#cbd5e1" />
-                <ellipse cx="140" cy="270" rx="30" ry="12" fill="#dcfce7" />
-                <ellipse cx="360" cy="270" rx="30" ry="12" fill="#dcfce7" />
+                <ellipse cx="250" cy="270" rx="200" ry="80" fill="#f1f5f9" />
+                <ellipse cx="250" cy="270" rx="170" ry="65" fill="#e2e8f0" stroke="#cbd5e1" strokeWidth="2" />
 
-                {/* Trees */}
-                <circle cx="130" cy="255" r="14" fill="#86efac" />
-                <circle cx="145" cy="250" r="16" fill="#4ade80" />
-                <rect x="136" y="265" width="4" height="10" fill="#78350f" />
+                {/* Pathway & Grass Patches */}
+                <path d="M 230 325 L 250 245 L 270 325 Z" fill="#cbd5e1" />
+                <ellipse cx="140" cy="275" rx="30" ry="12" fill="#dcfce7" />
+                <ellipse cx="360" cy="275" rx="30" ry="12" fill="#dcfce7" />
 
-                <circle cx="370" cy="255" r="14" fill="#86efac" />
-                <circle cx="355" cy="250" r="16" fill="#4ade80" />
-                <rect x="360" y="265" width="4" height="10" fill="#78350f" />
+                {/* Benches and Courtyard Trees */}
+                <circle cx="130" cy="260" r="14" fill="#86efac" />
+                <circle cx="145" cy="255" r="16" fill="#4ade80" />
+                <rect x="136" y="270" width="4" height="10" fill="#78350f" />
+
+                <circle cx="370" cy="260" r="14" fill="#86efac" />
+                <circle cx="355" cy="255" r="16" fill="#4ade80" />
+                <rect x="360" y="270" width="4" height="10" fill="#78350f" />
 
                 {/* Main Red-Brick Collegiate Building */}
                 {/* Left Wing */}
-                <path d="M 120 170 L 210 135 L 210 230 L 120 260 Z" fill="#b91c1c" />
-                <path d="M 130 130 L 220 100 L 210 135 L 120 170 Z" fill="#cbd5e1" stroke="#94a3b8" />
+                <path d="M 120 175 L 210 140 L 210 235 L 120 265 Z" fill="#b91c1c" />
+                <path d="M 130 135 L 220 105 L 210 140 L 120 175 Z" fill="#cbd5e1" stroke="#94a3b8" />
 
                 {/* Right Wing */}
-                <path d="M 290 135 L 380 170 L 380 260 L 290 230 Z" fill="#991b1b" />
-                <path d="M 280 100 L 370 130 L 380 170 L 290 135 Z" fill="#cbd5e1" stroke="#94a3b8" />
+                <path d="M 290 140 L 380 175 L 380 265 L 290 235 Z" fill="#991b1b" />
+                <path d="M 280 105 L 370 135 L 380 175 L 290 140 Z" fill="#cbd5e1" stroke="#94a3b8" />
 
                 {/* Central Tower */}
-                <path d="M 205 120 L 295 120 L 295 235 L 205 235 Z" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="2" />
-                <path d="M 225 235 L 225 195 Q 250 180 275 195 L 275 235 Z" fill="#1e293b" />
-                <rect x="235" y="205" width="30" height="30" fill="#38bdf8" opacity="0.7" />
-                <rect x="245" y="135" width="10" height="35" rx="2" fill="#ea432a" />
+                <path d="M 205 125 L 295 125 L 295 240 L 205 240 Z" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="2" />
+                <path d="M 225 240 L 225 200 Q 250 185 275 200 L 275 240 Z" fill="#1e293b" />
+                <rect x="235" y="210" width="30" height="30" fill="#38bdf8" opacity="0.7" />
+                <rect x="245" y="140" width="10" height="35" rx="2" fill="#ea432a" />
 
                 {/* Windows Grid */}
                 {[0, 1].map((row) =>
@@ -156,7 +167,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                     <rect
                       key={`w-left-${row}-${col}`}
                       x={135 + col * 24}
-                      y={180 + row * 28 - col * 6}
+                      y={185 + row * 28 - col * 6}
                       width="14"
                       height="18"
                       rx="7"
@@ -170,7 +181,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                     <rect
                       key={`w-right-${row}-${col}`}
                       x={305 + col * 24}
-                      y={165 + row * 28 + col * 6}
+                      y={170 + row * 28 + col * 6}
                       width="14"
                       height="18"
                       rx="7"
@@ -180,23 +191,23 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   ))
                 )}
 
-                {/* Clock Tower Spire */}
-                <path d="M 235 120 L 250 40 L 265 120 Z" fill="#94a3b8" stroke="#64748b" />
-                <circle cx="250" cy="90" r="10" fill="#ffffff" stroke="#cbd5e1" strokeWidth="2" />
-                <line x1="250" y1="90" x2="250" y2="84" stroke="#0f172a" strokeWidth="1.5" />
-                <line x1="250" y1="90" x2="254" y2="90" stroke="#0f172a" strokeWidth="1.5" />
+                {/* Clock Tower Pavilion */}
+                <path d="M 235 125 L 250 45 L 265 125 Z" fill="#94a3b8" stroke="#64748b" />
+                <circle cx="250" cy="95" r="10" fill="#ffffff" stroke="#cbd5e1" strokeWidth="2" />
+                <line x1="250" y1="95" x2="250" y2="89" stroke="#0f172a" strokeWidth="1.5" />
+                <line x1="250" y1="95" x2="254" y2="95" stroke="#0f172a" strokeWidth="1.5" />
               </svg>
             </div>
           </div>
 
           {/* Bottom Campus Identity */}
-          <div className="pt-4 border-t border-white/10">
+          <div className="pt-3 border-t border-white/10">
             <h4 className="font-extrabold text-xs text-white">Punjab College</h4>
             <p className="text-[11px] text-blue-200">Minar-e-Pakistan Campus, Lahore</p>
           </div>
         </div>
 
-        {/* Right Side: Login Form Area (Desktop & Mobile) */}
+        {/* Right Side: Login Form Area (Exact Mockup) */}
         <div className="lg:col-span-6 max-w-md w-full mx-auto space-y-6">
           {/* Back to Campus Link */}
           <div>
@@ -204,8 +215,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               onClick={onGoToLanding}
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to campus</span>
+              <span>← Back to campus</span>
             </button>
           </div>
 
@@ -234,7 +244,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
           {/* "I am a" Role Segmented Switcher */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 block">I am a</label>
+            <label className="text-xs font-semibold text-slate-600 block">I am a</label>
             <div className="bg-slate-100 p-1 rounded-xl flex gap-1 text-xs font-semibold">
               {(['admin', 'teacher', 'student'] as UserRole[]).map((r) => (
                 <button
@@ -265,7 +275,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           <form onSubmit={handleLogin} className="space-y-4">
             {/* Email Field */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 block">Email address</label>
+              <label className="text-xs font-semibold text-slate-700 block">Email address</label>
               <input
                 type="email"
                 required
@@ -278,7 +288,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
             {/* Password Field */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 block">Password</label>
+              <label className="text-xs font-semibold text-slate-700 block">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -300,19 +310,26 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
             {/* Remember Me & Forgot Password Row */}
             <div className="flex items-center justify-between text-xs pt-0.5">
-              <label className="flex items-center gap-2 text-slate-600 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded text-[#232766] focus:ring-[#232766] border-slate-300 cursor-pointer accent-[#232766]"
-                />
-                <span className="font-medium text-slate-700">Remember me</span>
-              </label>
+              <div
+                onClick={() => setRememberMe(!rememberMe)}
+                className="flex items-center gap-2 cursor-pointer select-none"
+              >
+                <div
+                  className={`w-4 h-4 rounded-xs flex items-center justify-center transition-all ${
+                    rememberMe
+                      ? 'bg-[#1b224b] text-white shadow-xs'
+                      : 'border border-slate-300 bg-white'
+                  }`}
+                >
+                  {rememberMe && <Check className="w-3 h-3 stroke-[3]" />}
+                </div>
+                <span className="font-medium text-slate-700 text-xs">Remember me</span>
+              </div>
+
               <button
                 type="button"
                 onClick={() => setForgotModalOpen(true)}
-                className="font-bold text-[#1b224b] hover:text-[#ea432a] transition-colors cursor-pointer"
+                className="font-semibold text-slate-700 hover:underline transition-colors cursor-pointer text-xs"
               >
                 Forgot password?
               </button>
@@ -322,44 +339,51 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-4 rounded-xl bg-[#1b224b] hover:bg-[#121633] text-white font-bold text-xs sm:text-sm shadow-md transition-all hover:scale-[1.01] cursor-pointer disabled:opacity-50"
+              className="w-full py-3 px-4 rounded-xl bg-[#1b224b] hover:bg-[#121633] text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer disabled:opacity-50"
             >
               {loading ? 'Authenticating...' : 'Sign in to Smart Campus'}
             </button>
           </form>
 
-          {/* Explore with a Demo Account Box */}
-          <div className="p-4 rounded-2xl bg-[#f0f4fd] border border-blue-100/90 space-y-2.5">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
-              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+          {/* Explore with a Demo Account Box (Exact Mockup) */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#f0f4fd] border border-blue-100/80 space-y-3">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1b224b]">
+              <ShieldCheck className="w-4 h-4 text-[#1b224b] shrink-0" />
               <span>Explore with a demo account</span>
             </div>
 
             <div className="space-y-1.5 text-xs">
-              {(
-                [
-                  { role: 'admin', label: 'Admin', email: 'admin@smartcampus.demo' },
-                  { role: 'teacher', label: 'Teacher', email: 'teacher@smartcampus.demo' },
-                  { role: 'student', label: 'Student', email: 'student@smartcampus.demo' },
-                ] as { role: UserRole; label: string; email: string }[]
-              ).map((acc) => (
-                <div
-                  key={acc.role}
-                  onClick={() => handleSelectDemoRow(acc.role)}
-                  className={`flex items-center justify-between py-1 px-2 rounded-lg cursor-pointer transition-colors ${
-                    activeRole === acc.role
-                      ? 'bg-white shadow-2xs font-bold text-slate-900'
-                      : 'hover:bg-white/60 text-slate-600'
-                  }`}
-                >
-                  <span className="w-16 font-semibold text-slate-800">{acc.label}</span>
-                  <span className="font-mono text-[11px] text-slate-600 truncate">{acc.email}</span>
-                </div>
-              ))}
+              <div
+                onClick={() => handleSelectDemoRow('admin')}
+                className="flex items-center gap-6 cursor-pointer hover:opacity-80 py-0.5"
+              >
+                <span className="w-14 text-slate-500 font-medium">Admin</span>
+                <span className="font-mono text-slate-700 text-[11px] sm:text-xs">
+                  admin@smartcampus.demo
+                </span>
+              </div>
+              <div
+                onClick={() => handleSelectDemoRow('teacher')}
+                className="flex items-center gap-6 cursor-pointer hover:opacity-80 py-0.5"
+              >
+                <span className="w-14 text-slate-500 font-medium">Teacher</span>
+                <span className="font-mono text-slate-700 text-[11px] sm:text-xs">
+                  teacher@smartcampus.demo
+                </span>
+              </div>
+              <div
+                onClick={() => handleSelectDemoRow('student')}
+                className="flex items-center gap-6 cursor-pointer hover:opacity-80 py-0.5"
+              >
+                <span className="w-14 text-slate-500 font-medium">Student</span>
+                <span className="font-mono text-slate-700 text-[11px] sm:text-xs">
+                  student@smartcampus.demo
+                </span>
+              </div>
             </div>
 
-            <div className="pt-1.5 border-t border-blue-200/50 text-[11px] font-bold text-slate-800">
-              Password for all roles: <span className="font-mono text-[#ea432a]">Demo@123</span>
+            <div className="pt-2 border-t border-blue-200/60 text-xs font-bold text-slate-800">
+              Password for all roles: <span className="font-mono font-bold text-slate-900">Demo@123</span>
             </div>
           </div>
 
