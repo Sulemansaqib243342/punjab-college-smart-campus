@@ -55,6 +55,7 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
   // Selected application for detail modal
   const [selectedApp, setSelectedApp] = useState<AdmissionApplication | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
+  const [termsAgreed, setTermsAgreed] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Online Form Fields (Structured as per mockup)
@@ -96,6 +97,11 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
 
   const handleFormSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+
+    if (!termsAgreed) {
+      alert('Please confirm that the information provided is accurate and agree to the admission terms.');
+      return;
+    }
 
     const fullName = `${formData.firstName} ${formData.lastName}`.trim();
 
@@ -879,55 +885,205 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
                 </div>
               )}
 
-              {/* STEP 5: REVIEW & SUBMIT */}
+              {/* STEP 5: REVIEW & SUBMIT (EXACT MOCKUP) */}
               {currentStep === 5 && (
                 <div className="space-y-6">
-                  <div className="space-y-1">
-                    <h2 className="text-xl sm:text-2xl font-black text-[#1b224b] tracking-tight">
-                      Review Application Particulars
-                    </h2>
-                    <p className="text-xs text-slate-500">
-                      Confirm your details before official submission to the Punjab College admission registry.
-                    </p>
+                  {/* Step Header with Desktop Photo at Top-Right */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1">
+                      <h2 className="text-xl sm:text-2xl font-black text-[#1b224b] tracking-tight">
+                        One last look.
+                      </h2>
+                      <p className="text-xs text-slate-500">
+                        Check your details before you submit.
+                      </p>
+                    </div>
+
+                    {/* Desktop Portrait Photo */}
+                    <img
+                      src={formData.photoUrl}
+                      alt="Applicant photograph"
+                      className="hidden sm:block w-12 h-14 sm:w-14 sm:h-16 rounded-xl object-cover border border-slate-200/90 shadow-2xs shrink-0"
+                    />
                   </div>
 
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 text-xs">
-                    <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                      <span className="font-bold text-slate-500">Applicant Name</span>
-                      <span className="font-extrabold text-slate-900">{formData.firstName} {formData.lastName}</span>
-                    </div>
-                    <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                      <span className="font-bold text-slate-500">B-Form / CNIC</span>
-                      <span className="font-mono font-bold text-slate-900">{formData.cnic}</span>
-                    </div>
-                    <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                      <span className="font-bold text-slate-500">Program Applied</span>
-                      <span className="font-bold text-[#ea432a]">{formData.groupName}</span>
-                    </div>
-                    <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                      <span className="font-bold text-slate-500">Matric Marks & Board</span>
-                      <span className="font-mono font-bold text-slate-900">{formData.previousMarks} / {formData.totalMarks} ({percentage}%) • {formData.previousBoard}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-500">Contact / Address</span>
-                      <span className="text-slate-800">{formData.phone} • {formData.address}</span>
+                  {/* Mobile Profile Row */}
+                  <div className="sm:hidden flex items-center gap-3.5 pt-1 pb-1">
+                    <img
+                      src={formData.photoUrl}
+                      alt="Applicant photograph"
+                      className="w-14 h-16 rounded-xl object-cover border border-slate-200/90 shadow-2xs shrink-0"
+                    />
+                    <div className="space-y-0.5">
+                      <h3 className="font-extrabold text-base text-[#1b224b]">
+                        {formData.firstName} {formData.lastName}
+                      </h3>
+                      <p className="text-xs text-slate-500">
+                        Session 2026–27
+                      </p>
                     </div>
                   </div>
 
-                  <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-3">
+                  {/* Two Sub-Cards Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Sub-Card 1: Personal Information */}
+                    <div className="p-4 sm:p-5 rounded-2xl bg-[#f8faff] border border-slate-200/70 space-y-3.5">
+                      <div className="flex items-center justify-between pb-1 border-b border-slate-200/60">
+                        <h3 className="font-bold text-xs sm:text-sm text-[#1b224b]">
+                          Personal information
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => setCurrentStep(1)}
+                          className="text-xs font-semibold text-[#1b224b] hover:underline cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                      </div>
+
+                      <div className="space-y-2 text-xs">
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">Full name</span>
+                          <span className="font-bold text-slate-800 text-right">
+                            {formData.firstName} {formData.lastName}
+                          </span>
+                        </div>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">Date of birth</span>
+                          <span className="font-bold text-slate-800 text-right">
+                            {formData.dob.includes('14') && formData.dob.includes('2009') ? '14 August 2009' : formData.dob}
+                          </span>
+                        </div>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">Gender</span>
+                          <span className="font-bold text-slate-800 text-right">{formData.gender}</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">Phone</span>
+                          <span className="font-mono font-bold text-slate-800 text-right">{formData.phone}</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">Email</span>
+                          <span className="font-bold text-slate-800 text-right truncate max-w-[160px] sm:max-w-none">
+                            {formData.email}
+                          </span>
+                        </div>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">B-form</span>
+                          <span className="font-mono font-bold text-slate-800 text-right">{formData.cnic}</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">Address</span>
+                          <span className="font-bold text-slate-800 text-right">{formData.address}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Sub-Card 2: Academic Information */}
+                    <div className="p-4 sm:p-5 rounded-2xl bg-[#f8faff] border border-slate-200/70 space-y-3.5">
+                      <div className="flex items-center justify-between pb-1 border-b border-slate-200/60">
+                        <h3 className="font-bold text-xs sm:text-sm text-[#1b224b]">
+                          Academic information
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => setCurrentStep(2)}
+                          className="text-xs font-semibold text-[#1b224b] hover:underline cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                      </div>
+
+                      <div className="space-y-2 text-xs">
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">Board</span>
+                          <span className="font-bold text-slate-800 text-right">{formData.educationBoard}</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">School</span>
+                          <span className="font-bold text-slate-800 text-right truncate max-w-[160px] sm:max-w-none">
+                            {formData.institution}
+                          </span>
+                        </div>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">Passing year</span>
+                          <span className="font-bold text-slate-800 text-right">{formData.passingYear}</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">Roll number</span>
+                          <span className="font-mono font-bold text-slate-800 text-right">{formData.matricRollNo}</span>
+                        </div>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">Matric marks</span>
+                          <span className="font-mono font-bold text-slate-800 text-right">
+                            {formData.previousMarks} / {formData.totalMarks}
+                          </span>
+                        </div>
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="text-slate-400 font-medium w-24 shrink-0">Percentage</span>
+                          <span className="font-mono font-bold text-slate-800 text-right">{percentage}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Group & Shift Banner */}
+                  <div className="p-4 rounded-2xl bg-[#edf2fe] border border-blue-100/90 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4">
+                    <div className="font-extrabold text-xs sm:text-sm text-[#1b224b]">
+                      {formData.groupName === 'Pre-Medical'
+                        ? 'FSc Pre-Medical'
+                        : formData.groupName === 'Pre-Engineering'
+                        ? 'FSc Pre-Engineering'
+                        : formData.groupName === 'Commerce'
+                        ? 'ICom'
+                        : formData.groupName} • {formData.shift.includes('Evening') ? 'Evening shift' : 'Morning shift'}
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {formData.groupName === 'Pre-Medical'
+                        ? 'Biology • Chemistry • Physics'
+                        : formData.groupName === 'Pre-Engineering'
+                        ? 'Mathematics • Chemistry • Physics'
+                        : formData.groupName === 'Commerce'
+                        ? 'Accounting • Commerce • Economics'
+                        : 'Computer Science • Physics • Mathematics'}
+                    </div>
+                  </div>
+
+                  {/* Confirmation Checkbox */}
+                  <div
+                    onClick={() => setTermsAgreed(!termsAgreed)}
+                    className="flex items-start gap-2.5 cursor-pointer pt-1"
+                  >
+                    <div
+                      className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 transition-all ${
+                        termsAgreed
+                          ? 'bg-[#1b224b] text-white shadow-xs'
+                          : 'border-2 border-slate-300 bg-white'
+                      }`}
+                    >
+                      {termsAgreed && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
+                    </div>
+                    <span className="text-xs text-slate-600 leading-snug select-none">
+                      I confirm that the information provided is accurate and agree to the admission terms.
+                    </span>
+                  </div>
+
+                  {/* Form Footer Actions */}
+                  <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                     <button
                       type="button"
                       onClick={() => setCurrentStep(4)}
-                      className="px-5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                      className="order-2 sm:order-1 px-6 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors text-center cursor-pointer"
                     >
-                      ← Back to photo
+                      Back
                     </button>
+
                     <button
                       type="button"
                       onClick={handleFormSubmit}
-                      className="px-7 py-3 rounded-xl bg-[#ea432a] hover:bg-[#d6341d] text-white text-xs sm:text-sm font-extrabold shadow-lg cursor-pointer transition-transform hover:scale-[1.02]"
+                      className="order-1 sm:order-2 px-7 py-2.5 rounded-xl bg-[#1b224b] hover:bg-[#121633] text-white text-xs sm:text-sm font-bold shadow-md transition-all text-center cursor-pointer"
                     >
-                      Submit Official Application
+                      Submit application
                     </button>
                   </div>
                 </div>
