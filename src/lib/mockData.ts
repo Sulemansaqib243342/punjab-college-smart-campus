@@ -37,7 +37,7 @@ export const DEMO_PROFILES: UserProfile[] = [
   {
     id: 'user-student-1',
     email: 'student@smartcampus.com',
-    full_name: 'Muhammad Hamza Khan',
+    full_name: 'Ahmed Raza',
     role: 'student',
     avatar_url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150',
     phone: '+92 333 1234567',
@@ -237,7 +237,7 @@ export function generateInitialStudents(): Student[] {
 
   // Class 1: 11th ICS-A (22 students)
   const icsNames = [
-    { name: 'Muhammad Hamza Khan', father: 'Muhammad Tariq Khan', bform: '35201-1234567-1', gender: 'Male' as const, isDemo: true },
+    { name: 'Ahmed Raza', father: 'Raza Ullah', bform: '35201-1234567-1', gender: 'Male' as const, isDemo: true },
     { name: 'Ali Raza', father: 'Raza Ullah', bform: '35201-2345678-3', gender: 'Male' as const },
     { name: 'Bilal Ahmed', father: 'Ahmed Saeed', bform: '35201-3456789-5', gender: 'Male' as const },
     { name: 'Usman Tariq', father: 'Tariq Mehmood', bform: '35201-4567890-7', gender: 'Male' as const },

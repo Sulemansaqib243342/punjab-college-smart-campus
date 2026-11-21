@@ -213,13 +213,13 @@ export function App() {
 
       {/* Mobile Bottom Navigation Bar (Matches Exact Role Mockup) */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0d1326]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800/80 py-2 px-3 flex items-center justify-around md:hidden shadow-lg">
-        {role === 'teacher' ? (
+        {role === 'teacher' || role === 'student' ? (
           <>
             <button
               type="button"
               onClick={() => setActiveView('dashboard')}
               className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
-                activeView === 'dashboard' || activeView === 'teacher-dashboard'
+                activeView === 'dashboard' || activeView === 'teacher-dashboard' || activeView === 'student-dashboard'
                   ? 'text-[#101c4e] dark:text-blue-400 font-extrabold'
                   : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
               }`}
