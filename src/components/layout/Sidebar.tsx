@@ -142,6 +142,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badgeColor: 'blue',
       roles: ['admin', 'teacher', 'student'],
     },
+    {
+      id: 'design-system',
+      label: 'UI Kit & Overview',
+      icon: <Sparkles className="w-5 h-5 shrink-0" />,
+      badge: 'Design',
+      badgeColor: 'red',
+      roles: ['admin', 'teacher', 'student'],
+    },
   ];
 
   const filteredItems = navItems.filter((item) => item.roles.includes(role));

@@ -18,6 +18,7 @@ import { FeesModule } from './components/modules/fees/FeesModule';
 import { TimetableModule } from './components/modules/timetable/TimetableModule';
 import { MaterialsModule } from './components/modules/materials/MaterialsModule';
 import { NoticesModule } from './components/modules/notices/NoticesModule';
+import { DesignSystemOverview } from './components/modules/DesignSystemOverview';
 import { StudentPerformanceModal } from './components/common/StudentPerformanceModal';
 import { PrintableResultCard } from './components/common/PrintableResultCard';
 import { PrintableFeeVoucher } from './components/common/PrintableFeeVoucher';
@@ -164,6 +165,7 @@ export function App() {
           {activeView === 'timetable' && <TimetableModule />}
           {activeView === 'materials' && <MaterialsModule />}
           {activeView === 'notices' && <NoticesModule />}
+          {activeView === 'design-system' && <DesignSystemOverview />}
         </main>
       </div>
 
