@@ -47,70 +47,95 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const currentUser = store.currentUser;
   const role = currentUser?.role || 'admin';
 
-  // Navigation Items Categorized
-  const academicItems = [
+  // Unified Navigation Items Matching Exact Mockup
+  const navItems = [
+    {
+      id: 'dashboard',
+      label: 'Overview',
+      icon: <LayoutGrid className="w-4 h-4 shrink-0" />,
+    },
+    {
+      id: 'teacher-dashboard',
+      label: 'Teacher dashboard',
+      icon: <GraduationCap className="w-4 h-4 shrink-0" />,
+    },
+    {
+      id: 'student-dashboard',
+      label: 'Student dashboard',
+      icon: <GraduationCap className="w-4 h-4 shrink-0" />,
+    },
     {
       id: 'students',
       label: 'Students',
       icon: <Users className="w-4 h-4 shrink-0" />,
-      roles: ['admin', 'teacher'],
     },
     {
       id: 'teachers',
       label: 'Teachers',
       icon: <GraduationCap className="w-4 h-4 shrink-0" />,
-      roles: ['admin'],
-    },
-    {
-      id: 'timetable',
-      label: 'Classes',
-      icon: <BookOpen className="w-4 h-4 shrink-0" />,
-      roles: ['admin', 'teacher', 'student'],
     },
     {
       id: 'attendance',
       label: 'Attendance',
       icon: <CalendarCheck className="w-4 h-4 shrink-0" />,
-      roles: ['admin', 'teacher', 'student'],
     },
     {
       id: 'exams',
       label: 'Examinations',
       icon: <FileText className="w-4 h-4 shrink-0" />,
-      roles: ['admin', 'teacher'],
     },
-  ];
-
-  const adminItems = [
     {
-      id: 'admissions',
-      label: 'Admissions',
-      icon: <UserPlus className="w-4 h-4 shrink-0" />,
-      badge: '12',
-      roles: ['admin'],
+      id: 'results',
+      label: 'Results',
+      icon: <BarChart3 className="w-4 h-4 shrink-0" />,
     },
     {
       id: 'fees',
       label: 'Fees & finance',
       icon: <CreditCard className="w-4 h-4 shrink-0" />,
-      roles: ['admin', 'student'],
+    },
+    {
+      id: 'timetable',
+      label: 'Timetable',
+      icon: <Clock className="w-4 h-4 shrink-0" />,
+    },
+    {
+      id: 'materials',
+      label: 'Study materials',
+      icon: <BookOpen className="w-4 h-4 shrink-0" />,
     },
     {
       id: 'notices',
       label: 'Campus notices',
       icon: <Bell className="w-4 h-4 shrink-0" />,
-      roles: ['admin', 'teacher', 'student'],
     },
     {
-      id: 'results',
-      label: 'Reports',
+      id: 'performance',
+      label: 'Performance',
       icon: <BarChart3 className="w-4 h-4 shrink-0" />,
-      roles: ['admin', 'teacher', 'student'],
     },
   ];
 
+  const isItemActive = (id: string) => {
+    if (id === 'teacher-dashboard') {
+      return activeView === 'teacher-dashboard' || (role === 'teacher' && activeView === 'dashboard');
+    }
+    if (id === 'student-dashboard') {
+      return activeView === 'student-dashboard' || (role === 'student' && activeView === 'dashboard');
+    }
+    if (id === 'dashboard') {
+      return activeView === 'dashboard' && role === 'admin';
+    }
+    return activeView === id;
+  };
+
   const handleItemClick = (id: string) => {
-    setActiveView(id);
+    if (id === 'performance') {
+      if (onOpenPerformance) onOpenPerformance();
+      else setActiveView('results');
+    } else {
+      setActiveView(id);
+    }
     onCloseMobile();
   };
 
@@ -180,105 +205,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        {/* Navigation Items List */}
-        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-4">
-          {/* Top: Overview (Dashboard) */}
-          <div>
-            <button
-              onClick={() => handleItemClick('dashboard')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                activeView === 'dashboard'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
-              } ${isCollapsed ? 'justify-center' : ''}`}
-              title={isCollapsed ? 'Overview' : undefined}
-            >
-              <LayoutGrid className={`w-4 h-4 shrink-0 ${activeView === 'dashboard' ? 'text-slate-900' : 'text-slate-400'}`} />
-              {!isCollapsed && <span>Overview</span>}
-            </button>
-          </div>
-
-          {/* Section: ACADEMICS */}
-          <div className="space-y-1">
-            {!isCollapsed && (
-              <div className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-500 pb-1">
-                ACADEMICS
-              </div>
-            )}
-            {academicItems
-              .filter((item) => item.roles.includes(role))
-              .map((item) => {
-                const isActive = activeView === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleItemClick(item.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
-                    } ${isCollapsed ? 'justify-center' : ''}`}
-                    title={isCollapsed ? item.label : undefined}
-                  >
-                    <span className={isActive ? 'text-slate-900' : 'text-slate-400'}>
-                      {item.icon}
-                    </span>
-                    {!isCollapsed && <span className="flex-1 text-left truncate">{item.label}</span>}
-                  </button>
-                );
-              })}
-          </div>
-
-          {/* Section: ADMINISTRATION */}
-          <div className="space-y-1">
-            {!isCollapsed && (
-              <div className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-500 pb-1">
-                ADMINISTRATION
-              </div>
-            )}
-            {adminItems
-              .filter((item) => item.roles.includes(role))
-              .map((item) => {
-                const isActive = activeView === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleItemClick(item.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
-                    } ${isCollapsed ? 'justify-center' : ''}`}
-                    title={isCollapsed ? item.label : undefined}
-                  >
-                    <span className={isActive ? 'text-slate-900' : 'text-slate-400'}>
-                      {item.icon}
-                    </span>
-                    {!isCollapsed && <span className="flex-1 text-left truncate">{item.label}</span>}
-                    {!isCollapsed && item.badge && (
-                      <span className="px-1.5 py-0.2 rounded-full bg-red-500 text-white font-bold text-[10px]">
-                        {item.badge}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-          </div>
-
-          {/* Student Special Feature */}
-          {role === 'student' && onOpenPerformance && (
-            <div className="pt-2">
+        {/* Navigation Items List (Matches Exact Mockup) */}
+        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
+          {navItems.map((item) => {
+            const active = isItemActive(item.id);
+            return (
               <button
-                onClick={onOpenPerformance}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold bg-linear-to-r from-[#ea432a] to-[#232766] text-white shadow-md hover:opacity-95 transition-all cursor-pointer ${
-                  isCollapsed ? 'justify-center' : ''
-                }`}
+                key={item.id}
+                onClick={() => handleItemClick(item.id)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs sm:text-sm transition-all cursor-pointer ${
+                  active
+                    ? 'bg-[#2563eb] text-white shadow-xs font-bold'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium'
+                } ${isCollapsed ? 'justify-center' : ''}`}
+                title={isCollapsed ? item.label : undefined}
               >
-                <Sparkles className="w-4 h-4 shrink-0 text-amber-300" />
-                {!isCollapsed && <span>AI Report Card</span>}
+                <span className={active ? 'text-white' : 'text-slate-400'}>
+                  {item.icon}
+                </span>
+                {!isCollapsed && <span className="flex-1 text-left truncate">{item.label}</span>}
               </button>
-            </div>
-          )}
+            );
+          })}
         </div>
 
         {/* Sidebar Bottom Footer Section */}

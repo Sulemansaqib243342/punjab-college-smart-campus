@@ -201,10 +201,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
               <div className="hidden sm:block text-left">
                 <span className="text-xs font-bold text-slate-900 dark:text-white block leading-tight">
-                  Campus Admin
+                  {role === 'teacher' ? 'Sana Iqbal' : role === 'student' ? (currentUser?.full_name || 'Muhammad Hamza') : 'Campus Admin'}
                 </span>
-                <span className="text-[10px] text-slate-400 block">
-                  Administrator
+                <span className="text-[10px] text-slate-400 block capitalize">
+                  {role === 'teacher' ? 'Teacher' : role === 'student' ? 'Student' : 'Administrator'}
                 </span>
               </div>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />

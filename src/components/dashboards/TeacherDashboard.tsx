@@ -1,17 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  Laptop,
   Users,
-  CalendarCheck,
-  FileSpreadsheet,
-  BookOpen,
   Clock,
-  ArrowRight,
-  Plus,
+  ChevronRight,
+  ChevronDown,
+  FileText,
+  CalendarCheck,
   CheckCircle2,
-  AlertCircle,
+  X,
+  BookOpen,
+  ArrowRight,
+  Shield,
+  User,
+  ExternalLink,
 } from 'lucide-react';
 import { useStore } from '../../lib/store';
-import { StatsCard } from '../common/StatsCard';
+import { Modal } from '../common/Modal';
 
 interface TeacherDashboardProps {
   onNavigate: (view: string) => void;
@@ -20,210 +25,557 @@ interface TeacherDashboardProps {
 export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }) => {
   const store = useStore();
   const currentUser = store.currentUser;
-  
-  // Find teacher profile (defaults to Prof. Tariq Mahmood)
-  const teacher = store.teachers.find((t) => t.email === currentUser?.email) || store.teachers[0];
 
-  // My classes
-  const myClasses = store.classes.filter((c) => teacher.assigned_classes.includes(c.id));
-  const primaryClass = myClasses[0] || store.classes[0];
+  // Selected class for Quick Attendance
+  const [selectedClass, setSelectedClass] = useState<'ICS Part 1 · A' | 'ICS Part 2 · A' | 'ICS Part 1 · B'>(
+    'ICS Part 1 · A'
+  );
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [attendanceSuccess, setAttendanceSuccess] = useState(false);
 
-  // Students in my class
-  const myStudents = store.students.filter((s) => s.class_id === primaryClass.id);
+  // Quick attendance dataset based on selection
+  const attendanceStats: Record<
+    string,
+    { present: number; absent: number; leave: number; learners: number; lastMarked: string }
+  > = {
+    'ICS Part 1 · A': { present: 39, absent: 2, leave: 1, learners: 42, lastMarked: '20 Nov' },
+    'ICS Part 2 · A': { present: 36, absent: 1, leave: 1, learners: 38, lastMarked: '20 Nov' },
+    'ICS Part 1 · B': { present: 38, absent: 2, leave: 0, learners: 40, lastMarked: '20 Nov' },
+  };
 
-  // My timetable slots for today (e.g. Monday)
-  const myTimetable = store.timetable.filter((t) => t.teacher_id === teacher.id || t.subject_id === 'sub-cs');
+  const currentStat = attendanceStats[selectedClass] || attendanceStats['ICS Part 1 · A'];
 
-  // Study materials uploaded by this teacher
-  const myMaterials = store.studyMaterials.filter((m) => m.teacher_id === teacher.id);
+  const handleQuickMarkAttendance = () => {
+    setAttendanceSuccess(true);
+    setTimeout(() => {
+      setAttendanceSuccess(false);
+      onNavigate('attendance');
+    }, 1200);
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Teacher Welcome Header */}
-      <div className="bg-linear-to-r from-[#191c4d] to-[#232766] text-white p-6 rounded-2xl shadow-lg border border-blue-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <img
-            src={teacher.photo_url}
-            alt={teacher.full_name}
-            className="w-16 h-16 rounded-xl object-cover ring-2 ring-[#ea432a] shadow-md"
-          />
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#ea432a] text-white uppercase tracking-wider">
-                Faculty Portal
-              </span>
-              <span className="text-xs text-blue-200">{teacher.employee_id}</span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-              {teacher.full_name}
-            </h2>
-            <p className="text-xs text-slate-300 mt-0.5">
-              {teacher.qualification} • {teacher.specialization}
-            </p>
-          </div>
+    <div className="space-y-6 max-w-7xl mx-auto pb-10">
+      {/* 1. Header Block */}
+      <div className="space-y-1">
+        <span className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 block">
+          TEACHER DASHBOARD
+        </span>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#101c4e] dark:text-white tracking-tight">
+          Your teaching day, simplified.
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          Your classes, today's schedule and the tools to keep learning moving.
+        </p>
+      </div>
+
+      {/* 2. Dark Navy Hero Banner (Exact Mockup) */}
+      <div className="bg-[#101c4e] text-white rounded-2xl sm:rounded-3xl p-6 sm:p-7 shadow-md relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+        <div className="space-y-1.5">
+          <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-blue-200 uppercase">
+            SATURDAY, 21 NOVEMBER 2026
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            Good morning, Sana.
+          </h2>
+          <p className="text-xs sm:text-sm text-blue-100/90 font-medium">
+            3 classes today. A little preparation, a lasting impact.
+          </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Profile Button: Stacks on mobile, inline pill on desktop */}
+        <div className="w-full sm:w-auto shrink-0">
           <button
-            onClick={() => onNavigate('attendance')}
-            className="px-4 py-2 rounded-xl bg-[#ea432a] hover:bg-[#d6341d] text-white text-xs font-bold shadow-md transition-colors flex items-center gap-1.5 cursor-pointer"
+            type="button"
+            onClick={() => setProfileModalOpen(true)}
+            className="w-full sm:w-auto px-6 py-2.5 rounded-xl sm:rounded-full bg-white text-[#101c4e] font-bold text-xs sm:text-sm hover:bg-slate-100 transition-all cursor-pointer shadow-xs text-center"
           >
-            <CalendarCheck className="w-4 h-4" />
-            <span>Mark Today's Attendance</span>
+            My profile
           </button>
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard
-          title="Assigned Students"
-          value={myStudents.length}
-          subtitle={`Class: ${primaryClass.name}`}
-          icon={<Users className="w-5 h-5" />}
-          color="blue"
-          onClick={() => onNavigate('students')}
-        />
-        <StatsCard
-          title="Today's Lectures"
-          value={myTimetable.length || 3}
-          subtitle="Periods scheduled today"
-          icon={<Clock className="w-5 h-5" />}
-          color="purple"
-          onClick={() => onNavigate('timetable')}
-        />
-        <StatsCard
-          title="Marks Evaluation"
-          value="Mid-Term Active"
-          subtitle="All subjects open"
-          icon={<FileSpreadsheet className="w-5 h-5" />}
-          color="emerald"
-          onClick={() => onNavigate('exams')}
-        />
-        <StatsCard
-          title="Study Notes Uploaded"
-          value={myMaterials.length}
-          subtitle="PDFs & past papers"
-          icon={<BookOpen className="w-5 h-5" />}
-          color="red"
-          onClick={() => onNavigate('materials')}
-        />
+      {/* 3. Top 3 KPI Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+        {/* Card 1: My classes */}
+        <div className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block">
+            My classes
+          </span>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
+              3
+            </span>
+            <Laptop className="w-5 h-5 text-slate-600 dark:text-slate-400 stroke-[1.8]" />
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">
+            ICS Part 1 & Part 2
+          </p>
+        </div>
+
+        {/* Card 2: Total learners */}
+        <div className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block">
+            Total learners
+          </span>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
+              120
+            </span>
+            <Users className="w-5 h-5 text-slate-600 dark:text-slate-400 stroke-[1.8]" />
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">
+            Across your teaching groups
+          </p>
+        </div>
+
+        {/* Card 3: Today's lessons */}
+        <div className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block">
+            Today's lessons
+          </span>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
+              3
+            </span>
+            <Clock className="w-5 h-5 text-slate-600 dark:text-slate-400 stroke-[1.8]" />
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">
+            Next class at 09:45 AM
+          </p>
+        </div>
       </div>
 
-      {/* Today's Schedule & Quick Attendance Action */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Schedule */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                <Clock className="w-4 h-4 text-blue-600" />
-                <span>Today's Academic Teaching Schedule</span>
-              </h3>
-              <p className="text-xs text-slate-500">Scheduled classroom lectures and laboratory sessions</p>
+      {/* 4. "My classes" Section */}
+      <div className="space-y-3">
+        <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
+          My classes
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+          {/* Class 1: ICS Part 1 · A */}
+          <div
+            onClick={() => onNavigate('students')}
+            className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Laptop className="w-4 h-4 text-slate-600 dark:text-slate-400 stroke-[1.8]" />
+                <span className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
+                  ICS Part 1 · A
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
             </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Computer Science
+            </p>
+            <div className="border-t border-slate-100 dark:border-slate-800 my-3" />
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              42 learners · Programming fundamentals
+            </p>
+          </div>
+
+          {/* Class 2: ICS Part 2 · A */}
+          <div
+            onClick={() => onNavigate('students')}
+            className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Laptop className="w-4 h-4 text-slate-600 dark:text-slate-400 stroke-[1.8]" />
+                <span className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
+                  ICS Part 2 · A
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Computer Science
+            </p>
+            <div className="border-t border-slate-100 dark:border-slate-800 my-3" />
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              38 learners · Database management
+            </p>
+          </div>
+
+          {/* Class 3: ICS Part 1 · B */}
+          <div
+            onClick={() => onNavigate('students')}
+            className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Laptop className="w-4 h-4 text-slate-600 dark:text-slate-400 stroke-[1.8]" />
+                <span className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
+                  ICS Part 1 · B
+                </span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Computer Science
+            </p>
+            <div className="border-t border-slate-100 dark:border-slate-800 my-3" />
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              40 learners · Programming fundamentals
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. Middle Row: Today's Timetable & Quick Attendance */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Left Column: Today's Timetable (7 cols on desktop) */}
+        <div className="lg:col-span-7 bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="space-y-0.5">
+              <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+                Today's timetable
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Saturday, 21 Nov · 3 scheduled lessons
+              </p>
+            </div>
+
+            {/* Timetable Rows */}
+            <div className="space-y-3.5 my-4">
+              {/* Row 1 */}
+              <div className="flex items-center justify-between py-1 text-xs">
+                <span className="font-bold text-slate-900 dark:text-white w-28 shrink-0">
+                  09:45 – 10:30
+                </span>
+                <div className="flex-1 px-3">
+                  <div className="font-bold text-slate-900 dark:text-white">
+                    ICS Part 1 · A
+                  </div>
+                  <div className="text-slate-500 dark:text-slate-400 text-[11px]">
+                    Introduction to algorithms
+                  </div>
+                </div>
+                <span className="text-slate-500 dark:text-slate-400 text-right shrink-0">
+                  CS Lab 1
+                </span>
+              </div>
+
+              <div className="border-t border-slate-100 dark:border-slate-800" />
+
+              {/* Row 2 */}
+              <div className="flex items-center justify-between py-1 text-xs">
+                <span className="font-bold text-slate-900 dark:text-white w-28 shrink-0">
+                  10:30 – 11:15
+                </span>
+                <div className="flex-1 px-3">
+                  <div className="font-bold text-slate-900 dark:text-white">
+                    ICS Part 2 · A
+                  </div>
+                  <div className="text-slate-500 dark:text-slate-400 text-[11px]">
+                    Relational databases
+                  </div>
+                </div>
+                <span className="text-slate-500 dark:text-slate-400 text-right shrink-0">
+                  CS Lab 2
+                </span>
+              </div>
+
+              <div className="border-t border-slate-100 dark:border-slate-800" />
+
+              {/* Row 3 */}
+              <div className="flex items-center justify-between py-1 text-xs">
+                <span className="font-bold text-slate-900 dark:text-white w-28 shrink-0">
+                  11:15 – 12:00
+                </span>
+                <div className="flex-1 px-3">
+                  <div className="font-bold text-slate-900 dark:text-white">
+                    ICS Part 1 · B
+                  </div>
+                  <div className="text-slate-500 dark:text-slate-400 text-[11px]">
+                    Flowcharts & pseudocode
+                  </div>
+                </div>
+                <span className="text-slate-500 dark:text-slate-400 text-right shrink-0">
+                  CS Lab 1
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onNavigate('timetable')}
+            className="w-full mt-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 text-slate-800 dark:text-slate-200 font-bold text-xs sm:text-sm transition-colors cursor-pointer text-center"
+          >
+            View full timetable
+          </button>
+        </div>
+
+        {/* Right Column: Quick Attendance (5 cols on desktop) */}
+        <div className="lg:col-span-5 bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="space-y-0.5">
+              <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+                Quick attendance
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Computer Science · Today, 21 Nov
+              </p>
+            </div>
+
+            {/* Select Class Dropdown */}
+            <div className="mt-4">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
+                Select class
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedClass}
+                  onChange={(e) =>
+                    setSelectedClass(e.target.value as 'ICS Part 1 · A' | 'ICS Part 2 · A' | 'ICS Part 1 · B')
+                  }
+                  className="w-full appearance-none px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs sm:text-sm font-semibold focus:outline-hidden focus:ring-2 focus:ring-[#101c4e] cursor-pointer"
+                >
+                  <option value="ICS Part 1 · A">ICS Part 1 · A</option>
+                  <option value="ICS Part 2 · A">ICS Part 2 · A</option>
+                  <option value="ICS Part 1 · B">ICS Part 1 · B</option>
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3.5 top-3 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* 3 Metric Stat Boxes */}
+            <div className="grid grid-cols-3 gap-2 mt-4 bg-[#f4f7fe] dark:bg-slate-800/40 p-3 rounded-xl text-center">
+              <div>
+                <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 block">
+                  {currentStat.present}
+                </span>
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  Present
+                </span>
+              </div>
+              <div>
+                <span className="text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-400 block">
+                  {currentStat.absent}
+                </span>
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  Absent
+                </span>
+              </div>
+              <div>
+                <span className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400 block">
+                  {currentStat.leave}
+                </span>
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  Leave
+                </span>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-2.5 font-medium">
+              {currentStat.learners} learners · Last marked {currentStat.lastMarked}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleQuickMarkAttendance}
+            className="w-full mt-4 py-3 rounded-xl bg-[#101c4e] hover:bg-[#0c163d] text-white font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
+          >
+            {attendanceSuccess ? 'Attendance recorded! Redirecting...' : 'Mark attendance'}
+          </button>
+        </div>
+      </div>
+
+      {/* 6. Bottom Row: Assessments & Uploaded Materials */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Left Card: Assessments */}
+        <div className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+          <div className="space-y-3">
+            <div>
+              <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+                Assessments
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Mid-term I · November 2026
+              </p>
+            </div>
+
+            <div>
+              <span className="inline-block px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold">
+                Exam
+              </span>
+            </div>
+
+            <div className="space-y-1">
+              <h4 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
+                Results are published
+              </h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                Completed 18 Nov · Published 20 Nov. Review class marks or prepare your next assessment.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2 mt-5">
             <button
-              onClick={() => onNavigate('timetable')}
-              className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline"
+              type="button"
+              onClick={() => onNavigate('exams')}
+              className="w-full py-3 rounded-xl bg-[#101c4e] hover:bg-[#0c163d] text-white font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
             >
-              Full Timetable →
+              Open marks entry
+            </button>
+            <button
+              type="button"
+              onClick={() => onNavigate('results')}
+              className="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 text-slate-800 dark:text-slate-200 font-bold text-xs sm:text-sm transition-colors cursor-pointer"
+            >
+              View class performance
             </button>
           </div>
-
-          <div className="space-y-3">
-            {myTimetable.slice(0, 3).map((slot, idx) => {
-              const sub = store.subjects.find((s) => s.id === slot.subject_id);
-              const cls = store.classes.find((c) => c.id === slot.class_id);
-              return (
-                <div
-                  key={slot.id || idx}
-                  className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 font-bold flex items-center justify-center text-xs">
-                      P-{slot.period_number}
-                    </div>
-                    <div>
-                      <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
-                        {sub?.name || 'Computer Science'} ({cls?.name || '11th ICS-A'})
-                      </div>
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                        {slot.start_time} - {slot.end_time} • Room: {slot.room_no}
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => onNavigate('attendance')}
-                    className="px-3 py-1.5 rounded-lg bg-blue-950 hover:bg-blue-900 text-white text-xs font-semibold transition-colors"
-                  >
-                    Attendance
-                  </button>
-                </div>
-              );
-            })}
-          </div>
         </div>
 
-        {/* Quick Actions Card */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+        {/* Right Card: Uploaded Materials */}
+        <div className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between">
           <div>
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white mb-1">
-              Faculty Quick Tasks
-            </h3>
-            <p className="text-xs text-slate-500 mb-4">Direct classroom tools</p>
+            <div className="space-y-0.5">
+              <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+                Uploaded materials
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Keep your learners ready for the next lesson
+              </p>
+            </div>
 
-            <div className="space-y-2.5">
-              <button
-                onClick={() => onNavigate('attendance')}
-                className="w-full p-3 rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/40 dark:bg-blue-950/20 hover:bg-blue-50 text-left text-xs font-bold text-blue-950 dark:text-blue-300 flex items-center justify-between transition-all"
-              >
-                <div className="flex items-center gap-2">
-                  <CalendarCheck className="w-4 h-4 text-blue-600" />
-                  <span>Mark Daily Attendance</span>
-                </div>
-                <ArrowRight className="w-4 h-4 text-blue-400" />
-              </button>
-
-              <button
-                onClick={() => onNavigate('exams')}
-                className="w-full p-3 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/40 dark:bg-red-950/20 hover:bg-red-50 text-left text-xs font-bold text-red-950 dark:text-red-300 flex items-center justify-between transition-all"
-              >
-                <div className="flex items-center gap-2">
-                  <FileSpreadsheet className="w-4 h-4 text-red-600" />
-                  <span>Enter Student Marks</span>
-                </div>
-                <ArrowRight className="w-4 h-4 text-red-400" />
-              </button>
-
-              <button
+            {/* List of 3 files */}
+            <div className="space-y-3.5 my-4">
+              {/* File 1 */}
+              <div
                 onClick={() => onNavigate('materials')}
-                className="w-full p-3 rounded-xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/40 dark:bg-emerald-950/20 hover:bg-emerald-50 text-left text-xs font-bold text-emerald-950 dark:text-emerald-300 flex items-center justify-between transition-all"
+                className="flex items-start gap-3 cursor-pointer group"
               >
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-emerald-600" />
-                  <span>Upload Notes / Past Papers</span>
+                <FileText className="w-5 h-5 text-slate-600 dark:text-slate-400 shrink-0 mt-0.5 stroke-[1.8]" />
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate group-hover:text-blue-600 transition-colors">
+                    Programming Fundamentals.pdf
+                  </div>
+                  <div className="text-xs text-slate-400 dark:text-slate-500">
+                    ICS Part 1 · A & B · Sana Iqbal · 1.8 MB
+                  </div>
                 </div>
-                <Plus className="w-4 h-4 text-emerald-500" />
-              </button>
+              </div>
 
-              <button
-                onClick={() => onNavigate('notices')}
-                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-left text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between transition-all"
+              {/* File 2 */}
+              <div
+                onClick={() => onNavigate('materials')}
+                className="flex items-start gap-3 cursor-pointer group"
               >
-                <div className="flex items-center gap-2">
-                  <span>Post Class Announcement</span>
+                <FileText className="w-5 h-5 text-slate-600 dark:text-slate-400 shrink-0 mt-0.5 stroke-[1.8]" />
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate group-hover:text-blue-600 transition-colors">
+                    Database Practice Set.pdf
+                  </div>
+                  <div className="text-xs text-slate-400 dark:text-slate-500">
+                    ICS Part 2 · A · Sana Iqbal · 1.1 MB
+                  </div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-slate-400" />
-              </button>
+              </div>
+
+              {/* File 3 */}
+              <div
+                onClick={() => onNavigate('materials')}
+                className="flex items-start gap-3 cursor-pointer group"
+              >
+                <FileText className="w-5 h-5 text-slate-600 dark:text-slate-400 shrink-0 mt-0.5 stroke-[1.8]" />
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate group-hover:text-blue-600 transition-colors">
+                    Algorithms Worksheet.pdf
+                  </div>
+                  <div className="text-xs text-slate-400 dark:text-slate-500">
+                    ICS Part 1 · A & B · Sana Iqbal · 840 KB
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500">
-            Assigned Section: {primaryClass.name} • Room 101 CS Block
-          </div>
+          <button
+            type="button"
+            onClick={() => onNavigate('materials')}
+            className="w-full mt-2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 text-slate-800 dark:text-slate-200 font-bold text-xs sm:text-sm transition-colors cursor-pointer text-center"
+          >
+            Manage materials
+          </button>
         </div>
       </div>
+
+      {/* 7. Footer Note (Exact Mockup) */}
+      <div className="text-xs text-slate-400 dark:text-slate-500 pt-2 pb-4 text-center sm:text-left">
+        Demo campus data · Punjab College, Minar-e-Pakistan Campus, Lahore
+      </div>
+
+      {/* Profile Modal */}
+      <Modal
+        isOpen={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+        title="Faculty Profile"
+        maxWidth="md"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#f4f7fe] dark:bg-slate-800/50">
+            <img
+              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150"
+              alt="Sana Iqbal"
+              className="w-16 h-16 rounded-2xl object-cover ring-2 ring-[#101c4e]"
+            />
+            <div>
+              <h3 className="font-black text-lg text-slate-900 dark:text-white">
+                Sana Iqbal
+              </h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                Senior Lecturer · Department of Computer Science
+              </p>
+              <div className="text-[11px] font-bold text-[#101c4e] dark:text-blue-400 mt-1">
+                PCL-TCH-01 · Punjab College Lahore
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2 text-xs">
+            <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500">Official Email:</span>
+              <span className="font-mono font-semibold text-slate-800 dark:text-slate-200">
+                teacher@smartcampus.demo
+              </span>
+            </div>
+            <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500">Assigned Classes:</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200">
+                ICS Part 1 (A & B), ICS Part 2 (A)
+              </span>
+            </div>
+            <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500">Total Enrolled Learners:</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200">
+                120 Students
+              </span>
+            </div>
+            <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500">Campus Location:</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200">
+                Minar-e-Pakistan Campus, Lahore
+              </span>
+            </div>
+          </div>
+
+          <div className="pt-2 flex justify-end">
+            <button
+              type="button"
+              onClick={() => setProfileModalOpen(false)}
+              className="px-4 py-2 rounded-xl bg-[#101c4e] text-white text-xs font-bold cursor-pointer hover:bg-[#0c163d]"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
-

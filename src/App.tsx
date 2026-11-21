@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutGrid, Users, CreditCard, Menu } from 'lucide-react';
+import { LayoutGrid, Users, CreditCard, Menu, CalendarCheck, Clock } from 'lucide-react';
 import { useStore } from './lib/store';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
@@ -139,6 +139,19 @@ export function App() {
             </>
           )}
 
+          {activeView === 'teacher-dashboard' && (
+            <TeacherDashboard onNavigate={setActiveView} />
+          )}
+
+          {activeView === 'student-dashboard' && (
+            <StudentDashboard
+              onNavigate={setActiveView}
+              onOpenPerformance={() => setShowPerformanceModal(true)}
+              onOpenResultCard={() => setShowResultCardModal(true)}
+              onOpenFeeVoucher={() => setShowFeeVoucherModal(true)}
+            />
+          )}
+
           {activeView === 'admissions' && <AdmissionsModule />}
           {activeView === 'students' && <StudentsModule />}
           {activeView === 'teachers' && <TeachersModule />}
@@ -198,63 +211,125 @@ export function App() {
         />
       )}
 
-      {/* Mobile Bottom Navigation Bar (Matching Mobile Mockup) */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0d1326]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800/80 py-2 px-3 flex items-center justify-around md:hidden">
-        <button
-          type="button"
-          onClick={() => setActiveView('dashboard')}
-          className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
-            activeView === 'dashboard'
-              ? 'text-[#1b224b] dark:text-white'
-              : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
-          }`}
-        >
-          <div className="w-5 h-5 flex items-center justify-center">
-            <LayoutGrid className="w-4 h-4" />
-          </div>
-          <span>Overview</span>
-        </button>
+      {/* Mobile Bottom Navigation Bar (Matches Exact Role Mockup) */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0d1326]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800/80 py-2 px-3 flex items-center justify-around md:hidden shadow-lg">
+        {role === 'teacher' ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setActiveView('dashboard')}
+              className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
+                activeView === 'dashboard' || activeView === 'teacher-dashboard'
+                  ? 'text-[#101c4e] dark:text-blue-400 font-extrabold'
+                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+              }`}
+            >
+              <div className="w-5 h-5 flex items-center justify-center">
+                <LayoutGrid className="w-4 h-4" />
+              </div>
+              <span>Home</span>
+            </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveView('students')}
-          className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
-            activeView === 'students'
-              ? 'text-[#1b224b] dark:text-white'
-              : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
-          }`}
-        >
-          <div className="w-5 h-5 flex items-center justify-center">
-            <Users className="w-4 h-4" />
-          </div>
-          <span>Students</span>
-        </button>
+            <button
+              type="button"
+              onClick={() => setActiveView('attendance')}
+              className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
+                activeView === 'attendance'
+                  ? 'text-[#101c4e] dark:text-blue-400 font-extrabold'
+                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+              }`}
+            >
+              <div className="w-5 h-5 flex items-center justify-center">
+                <CalendarCheck className="w-4 h-4" />
+              </div>
+              <span>Attendance</span>
+            </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveView('fees')}
-          className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
-            activeView === 'fees'
-              ? 'text-[#1b224b] dark:text-white'
-              : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
-          }`}
-        >
-          <div className="w-5 h-5 flex items-center justify-center">
-            <CreditCard className="w-4 h-4" />
-          </div>
-          <span>Fees</span>
-        </button>
+            <button
+              type="button"
+              onClick={() => setActiveView('timetable')}
+              className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
+                activeView === 'timetable'
+                  ? 'text-[#101c4e] dark:text-blue-400 font-extrabold'
+                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+              }`}
+            >
+              <div className="w-5 h-5 flex items-center justify-center">
+                <Clock className="w-4 h-4" />
+              </div>
+              <span>Timetable</span>
+            </button>
 
-        <button
-          type="button"
-          onClick={() => setIsSidebarOpen(true)}
-          className="flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
-        >
-          <div className="w-5 h-5 flex items-center justify-center">
-            <Menu className="w-4 h-4" />
-          </div>
-          <span>More</span>
-        </button>
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen(true)}
+              className="flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+            >
+              <div className="w-5 h-5 flex items-center justify-center">
+                <Menu className="w-4 h-4" />
+              </div>
+              <span>More</span>
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => setActiveView('dashboard')}
+              className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
+                activeView === 'dashboard'
+                  ? 'text-[#1b224b] dark:text-white'
+                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+              }`}
+            >
+              <div className="w-5 h-5 flex items-center justify-center">
+                <LayoutGrid className="w-4 h-4" />
+              </div>
+              <span>Overview</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveView('students')}
+              className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
+                activeView === 'students'
+                  ? 'text-[#1b224b] dark:text-white'
+                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+              }`}
+            >
+              <div className="w-5 h-5 flex items-center justify-center">
+                <Users className="w-4 h-4" />
+              </div>
+              <span>Students</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveView('fees')}
+              className={`flex flex-col items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
+                activeView === 'fees'
+                  ? 'text-[#1b224b] dark:text-white'
+                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+              }`}
+            >
+              <div className="w-5 h-5 flex items-center justify-center">
+                <CreditCard className="w-4 h-4" />
+              </div>
+              <span>Fees</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen(true)}
+              className="flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+            >
+              <div className="w-5 h-5 flex items-center justify-center">
+                <Menu className="w-4 h-4" />
+              </div>
+              <span>More</span>
+            </button>
+          </>
+        )}
       </nav>
     </div>
   );
