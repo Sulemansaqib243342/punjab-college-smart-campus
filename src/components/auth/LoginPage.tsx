@@ -6,6 +6,7 @@ import {
   AlertCircle,
   ShieldCheck,
   Check,
+  GraduationCap,
 } from 'lucide-react';
 import { useStore } from '../../lib/store';
 import { Modal } from '../common/Modal';
@@ -209,8 +210,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
         {/* Right Side: Login Form Area (Exact Mockup) */}
         <div className="lg:col-span-6 max-w-md w-full mx-auto space-y-6">
-          {/* Back to Campus Link */}
-          <div>
+          {/* Back to Campus Link (Desktop) */}
+          <div className="hidden lg:block">
             <button
               onClick={onGoToLanding}
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
@@ -219,22 +220,23 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             </button>
           </div>
 
-          {/* Mobile Header (Shown on mobile when left banner is hidden) */}
-          <div className="lg:hidden flex items-center gap-3 pb-2">
-            <div className="w-10 h-10 rounded-2xl bg-[#1b224b] text-white flex items-center justify-center shadow-xs">
-              <CollegeLogoIcon size={20} />
-            </div>
+          {/* Mobile Header (Shown on mobile matching media_1795271471732_1ff8572d.png) */}
+          <div
+            className="lg:hidden flex items-center gap-3 pb-1 pt-1 cursor-pointer select-none"
+            onClick={onGoToLanding}
+          >
+            <GraduationCap className="w-8 h-8 text-[#101c4e] stroke-[2]" />
             <div>
-              <div className="font-extrabold text-base text-slate-900 leading-tight">Smart Campus</div>
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                PUNJAB COLLEGE • LAHORE
+              <div className="font-extrabold text-lg text-[#101c4e] leading-tight tracking-tight">Smart Campus</div>
+              <div className="text-[10px] font-bold text-slate-400 tracking-wider">
+                PUNJAB COLLEGE · LAHORE
               </div>
             </div>
           </div>
 
           {/* Heading */}
           <div className="space-y-1">
-            <h1 className="text-3xl sm:text-4xl font-black text-[#1b224b] tracking-tight">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-[#101c4e] tracking-tight">
               Welcome back.
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
@@ -242,10 +244,33 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             </p>
           </div>
 
-          {/* "I am a" Role Segmented Switcher */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-600 block">I am a</label>
-            <div className="bg-slate-100 p-1 rounded-xl flex gap-1 text-xs font-semibold">
+          {/* "I am a" Role Selector */}
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-slate-700 block">I am a</label>
+
+            {/* Mobile View: 3 Separate Rounded-2xl Button Cards (Exact Match to media_1795271471732_1ff8572d.png) */}
+            <div className="grid grid-cols-3 gap-2.5 sm:gap-3 lg:hidden">
+              {(['admin', 'teacher', 'student'] as UserRole[]).map((r) => {
+                const isSelected = activeRole === r;
+                return (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => handleRoleChange(r)}
+                    className={`py-3 px-3 text-center rounded-2xl text-xs sm:text-sm capitalize transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#101c4e] text-white shadow-xs font-bold border border-[#101c4e]'
+                        : 'bg-white text-[#101c4e] font-semibold border border-slate-200/90 hover:border-slate-300 hover:bg-slate-50'
+                    }`}
+                  >
+                    {r}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Desktop View: Segmented Pill Switcher (Exact Match to media_1795268497139_83bed6d0.jpg) */}
+            <div className="hidden lg:flex bg-slate-100 p-1 rounded-xl gap-1 text-xs font-semibold">
               {(['admin', 'teacher', 'student'] as UserRole[]).map((r) => (
                 <button
                   key={r}
@@ -282,7 +307,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@smartcampus.demo"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#232766] focus:border-[#232766] transition-all"
+                className="w-full px-4 py-3 rounded-2xl border border-blue-500 lg:border-slate-300 bg-white text-slate-900 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#101c4e] focus:border-[#101c4e] transition-all"
               />
             </div>
 
@@ -296,12 +321,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#232766] focus:border-[#232766] transition-all"
+                  className="w-full px-4 py-3 pr-10 rounded-2xl border border-slate-200 lg:border-slate-300 bg-white text-slate-900 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#101c4e] focus:border-[#101c4e] transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -309,27 +334,23 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             </div>
 
             {/* Remember Me & Forgot Password Row */}
-            <div className="flex items-center justify-between text-xs pt-0.5">
+            <div className="flex items-center justify-between text-xs pt-1">
               <div
                 onClick={() => setRememberMe(!rememberMe)}
-                className="flex items-center gap-2 cursor-pointer select-none"
+                className="flex items-center gap-1.5 cursor-pointer select-none"
               >
-                <div
-                  className={`w-4 h-4 rounded-xs flex items-center justify-center transition-all ${
-                    rememberMe
-                      ? 'bg-[#1b224b] text-white shadow-xs'
-                      : 'border border-slate-300 bg-white'
+                <Check
+                  className={`w-4 h-4 stroke-[2.5] transition-colors ${
+                    rememberMe ? 'text-[#101c4e]' : 'text-slate-300'
                   }`}
-                >
-                  {rememberMe && <Check className="w-3 h-3 stroke-[3]" />}
-                </div>
-                <span className="font-medium text-slate-700 text-xs">Remember me</span>
+                />
+                <span className="font-medium text-slate-600 text-xs">Remember me</span>
               </div>
 
               <button
                 type="button"
                 onClick={() => setForgotModalOpen(true)}
-                className="font-semibold text-slate-700 hover:underline transition-colors cursor-pointer text-xs"
+                className="font-bold text-[#101c4e] hover:underline transition-colors cursor-pointer text-xs"
               >
                 Forgot password?
               </button>
@@ -339,58 +360,57 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 rounded-xl bg-[#1b224b] hover:bg-[#121633] text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-3.5 px-4 rounded-2xl bg-[#101c4e] hover:bg-[#0c163d] text-white font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer disabled:opacity-50"
             >
               {loading ? 'Authenticating...' : 'Sign in to Smart Campus'}
             </button>
           </form>
 
-          {/* Explore with a Demo Account Box (Exact Mockup) */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#f0f4fd] border border-blue-100/80 space-y-3">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[#1b224b]">
-              <ShieldCheck className="w-4 h-4 text-[#1b224b] shrink-0" />
-              <span>Explore with a demo account</span>
+          {/* Explore with a Demo Account Box (Exact Match to media_1795271471732_1ff8572d.png) */}
+          <div className="p-5 rounded-2xl bg-[#f4f7fe] space-y-3 text-left">
+            <div className="text-xs sm:text-sm font-bold text-[#101c4e]">
+              Explore with a demo account
             </div>
 
-            <div className="space-y-1.5 text-xs">
+            <div className="space-y-2 text-xs">
               <div
                 onClick={() => handleSelectDemoRow('admin')}
-                className="flex items-center gap-6 cursor-pointer hover:opacity-80 py-0.5"
+                className="flex items-center justify-between sm:justify-start sm:gap-8 cursor-pointer hover:opacity-80 py-0.5"
               >
-                <span className="w-14 text-slate-500 font-medium">Admin</span>
-                <span className="font-mono text-slate-700 text-[11px] sm:text-xs">
+                <span className="w-16 text-slate-500 font-medium">Admin</span>
+                <span className="font-mono text-slate-700 text-xs">
                   admin@smartcampus.demo
                 </span>
               </div>
               <div
                 onClick={() => handleSelectDemoRow('teacher')}
-                className="flex items-center gap-6 cursor-pointer hover:opacity-80 py-0.5"
+                className="flex items-center justify-between sm:justify-start sm:gap-8 cursor-pointer hover:opacity-80 py-0.5"
               >
-                <span className="w-14 text-slate-500 font-medium">Teacher</span>
-                <span className="font-mono text-slate-700 text-[11px] sm:text-xs">
+                <span className="w-16 text-slate-500 font-medium">Teacher</span>
+                <span className="font-mono text-slate-700 text-xs">
                   teacher@smartcampus.demo
                 </span>
               </div>
               <div
                 onClick={() => handleSelectDemoRow('student')}
-                className="flex items-center gap-6 cursor-pointer hover:opacity-80 py-0.5"
+                className="flex items-center justify-between sm:justify-start sm:gap-8 cursor-pointer hover:opacity-80 py-0.5"
               >
-                <span className="w-14 text-slate-500 font-medium">Student</span>
-                <span className="font-mono text-slate-700 text-[11px] sm:text-xs">
+                <span className="w-16 text-slate-500 font-medium">Student</span>
+                <span className="font-mono text-slate-700 text-xs">
                   student@smartcampus.demo
                 </span>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-blue-200/60 text-xs font-bold text-slate-800">
-              Password for all roles: <span className="font-mono font-bold text-slate-900">Demo@123</span>
+            <div className="pt-2 text-xs text-slate-800">
+              Password for all roles: <span className="font-bold text-[#101c4e]">Demo@123</span>
             </div>
           </div>
 
           {/* Footer Notes */}
-          <div className="space-y-1 text-center text-[11px] text-slate-400 pt-2">
+          <div className="space-y-1.5 text-left text-xs text-slate-500 pt-1">
             <p>Need access? Contact the campus administrator.</p>
-            <p className="text-[10px] text-slate-400">Protected access for the Punjab College community.</p>
+            <p className="text-slate-400">Protected access for the Punjab College community.</p>
           </div>
         </div>
       </div>
