@@ -74,6 +74,7 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
     totalMarks: 1100,
     previousBoard: 'BISE Lahore',
     groupName: 'ICS' as AcademicGroup,
+    shift: 'Morning • 8:00am – 1:30pm',
     photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
   });
 
@@ -240,7 +241,8 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
               Your future starts here.
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
-              Apply to Punjab College, Minar-e-Pakistan Campus, Lahore. Let's get to know you.
+              <span className="sm:hidden">A few details. A world of possibility.</span>
+              <span className="hidden sm:inline">Apply to Punjab College, Minar-e-Pakistan Campus, Lahore. Let's get to know you.</span>
             </p>
           </div>
 
@@ -260,11 +262,11 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
                         isActive
                           ? 'bg-[#1b224b] text-white shadow-xs'
                           : isPast
-                          ? 'bg-emerald-600 text-white'
-                          : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'
+                          ? 'bg-[#1b224b] text-white'
+                          : 'bg-white border border-slate-300 text-slate-400 group-hover:border-slate-400'
                       }`}
                     >
-                      {isPast ? <Check className="w-3.5 h-3.5" /> : s.num}
+                      {isPast ? <Check className="w-3.5 h-3.5 stroke-[2.5]" /> : s.num}
                     </div>
                     <span
                       className={`text-xs ${
@@ -611,82 +613,120 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
                 </div>
               )}
 
-              {/* STEP 3: GROUP SELECTION */}
+              {/* STEP 3: GROUP SELECTION (EXACT MOCKUP) */}
               {currentStep === 3 && (
                 <div className="space-y-6">
+                  {/* Step Header */}
                   <div className="space-y-1">
                     <h2 className="text-xl sm:text-2xl font-black text-[#1b224b] tracking-tight">
-                      Choose Academic Discipline
+                      Choose your direction.
                     </h2>
                     <p className="text-xs text-slate-500">
-                      Select your desired intermediate program for session 2026-27.
+                      Big ambitions begin with the right programme.
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {/* 4 Program Selection Cards (2x2 on desktop, 1 col on mobile) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
                       {
-                        name: 'ICS',
-                        title: 'ICS (Computer Science)',
-                        desc: 'Math, Physics / Stats, Computer Science',
+                        key: 'ICS',
+                        title: 'ICS',
+                        desc: 'Computer Science • Physics • Mathematics',
                       },
                       {
-                        name: 'Pre-Medical',
-                        title: 'F.Sc Pre-Medical',
-                        desc: 'Biology, Chemistry, Physics',
+                        key: 'Pre-Medical',
+                        title: 'FSc Pre-Medical',
+                        desc: 'Biology • Chemistry • Physics',
                       },
                       {
-                        name: 'Pre-Engineering',
-                        title: 'F.Sc Pre-Engineering',
-                        desc: 'Mathematics, Physics, Chemistry',
+                        key: 'Pre-Engineering',
+                        title: 'FSc Pre-Engineering',
+                        desc: 'Mathematics • Chemistry • Physics',
                       },
                       {
-                        name: 'Commerce',
-                        title: 'I.Com (Commerce)',
-                        desc: 'Accounting, Economics, Business Math',
+                        key: 'Commerce',
+                        title: 'ICom',
+                        desc: 'Accounting • Commerce • Economics',
                       },
-                      {
-                        name: 'Arts',
-                        title: 'F.A (General Science / Humanities)',
-                        desc: 'Elective Humanities & Social Sciences',
-                      },
-                    ].map((g) => (
-                      <div
-                        key={g.name}
-                        onClick={() => setFormData({ ...formData, groupName: g.name as AcademicGroup })}
-                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                          formData.groupName === g.name
-                            ? 'border-[#232766] bg-blue-50/50 shadow-xs'
-                            : 'border-slate-200 hover:border-slate-300 bg-white'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-bold text-xs sm:text-sm text-slate-900">{g.title}</h4>
-                          {formData.groupName === g.name && (
-                            <span className="w-5 h-5 rounded-full bg-[#232766] text-white flex items-center justify-center text-xs">
-                              ✓
-                            </span>
-                          )}
+                    ].map((prog) => {
+                      const isSelected = formData.groupName === prog.key;
+                      return (
+                        <div
+                          key={prog.key}
+                          onClick={() => setFormData({ ...formData, groupName: prog.key as AcademicGroup })}
+                          className={`p-5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3.5 ${
+                            isSelected
+                              ? 'bg-[#f0f4fd] border-[#1b224b] shadow-xs'
+                              : 'bg-white border-slate-200/90 hover:border-slate-300'
+                          }`}
+                        >
+                          {/* Radio Icon Indicator */}
+                          <div className="pt-0.5 shrink-0">
+                            <div
+                              className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+                                isSelected
+                                  ? 'border-2 border-[#1b224b] bg-[#1b224b]'
+                                  : 'border-2 border-slate-300 bg-white'
+                              }`}
+                            >
+                              {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                            </div>
+                          </div>
+
+                          {/* Content */}
+                          <div className="space-y-1">
+                            <h3 className="font-extrabold text-sm sm:text-base text-slate-900 leading-tight">
+                              {prog.title}
+                            </h3>
+                            <p className="text-xs text-slate-500 leading-relaxed">{prog.desc}</p>
+                          </div>
                         </div>
-                        <p className="text-[11px] text-slate-500 mt-1">{g.desc}</p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
-                  <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-3">
+                  {/* Preferred Shift Row */}
+                  <div className="pt-2">
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                      <div className="space-y-1.5 w-full sm:max-w-xs">
+                        <label className="text-xs font-bold text-slate-700 block">Preferred shift *</label>
+                        <div className="relative">
+                          <select
+                            value={formData.shift}
+                            onChange={(e) => setFormData({ ...formData, shift: e.target.value })}
+                            className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm text-slate-900 font-medium focus:outline-hidden focus:ring-2 focus:ring-[#232766] appearance-none"
+                          >
+                            <option value="Morning • 8:00am – 1:30pm">Morning • 8:00am – 1:30pm</option>
+                            <option value="Evening • 1:45pm – 6:30pm">Evening • 1:45pm – 6:30pm</option>
+                          </select>
+                          <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-3 pointer-events-none" />
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-slate-400 sm:pb-3">
+                        <span className="sm:hidden">Placement is subject to merit and availability.</span>
+                        <span className="hidden sm:inline">Final placement is subject to merit and seat availability.</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Form Footer Actions */}
+                  <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                     <button
                       type="button"
                       onClick={() => setCurrentStep(2)}
-                      className="px-5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                      className="order-2 sm:order-1 px-6 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors text-center cursor-pointer"
                     >
-                      ← Back to academic info
+                      Back
                     </button>
+
                     <button
                       type="button"
                       onClick={() => setCurrentStep(4)}
-                      className="px-6 py-2.5 rounded-xl bg-[#1b224b] hover:bg-[#121633] text-white text-xs sm:text-sm font-bold shadow-md cursor-pointer"
+                      className="order-1 sm:order-2 px-6 py-2.5 rounded-xl bg-[#1b224b] hover:bg-[#121633] text-white text-xs sm:text-sm font-bold shadow-md transition-all text-center cursor-pointer"
                     >
-                      Continue to photo upload
+                      Continue to photo
                     </button>
                   </div>
                 </div>
