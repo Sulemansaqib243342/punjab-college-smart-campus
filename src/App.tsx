@@ -161,7 +161,17 @@ export function App() {
           {activeView === 'fees' && <FeesModule />}
           {activeView === 'timetable' && <TimetableModule />}
           {activeView === 'materials' && <MaterialsModule />}
-          {activeView === 'notices' && <NoticesModule />}
+          {activeView === 'notices' && (
+            <NoticesModule onNavigateToResults={() => setActiveView('results')} />
+          )}
+          {activeView === 'performance' && (
+            <div className="py-2">
+              <StudentPerformanceModal
+                student={activeStudent}
+                onClose={() => setActiveView('dashboard')}
+              />
+            </div>
+          )}
           {activeView === 'design-system' && <DesignSystemOverview />}
         </main>
       </div>

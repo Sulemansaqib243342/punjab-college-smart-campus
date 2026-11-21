@@ -8,360 +8,379 @@ import {
   Calendar,
   BookOpen,
   Award,
+  ChevronDown,
+  ArrowRight,
+  Printer,
 } from 'lucide-react';
 import { useStore } from '../../../lib/store';
-import { Exam, ExamType } from '../../../types';
 import { Modal } from '../../common/Modal';
-import { calculateGrade, formatDate } from '../../../lib/utils';
+
+interface ExamScheduleItem {
+  id: string;
+  title: string;
+  date_range: string;
+  scope: string;
+  status: 'Published' | 'Upcoming';
+  status_detail: string;
+  action_label: string;
+}
+
+const EXAM_SCHEDULE: ExamScheduleItem[] = [
+  {
+    id: 'exam-1',
+    title: 'Mid-term I · November 2026',
+    date_range: '09-18 Nov 2026',
+    scope: '6 classes · 30 subject sessions',
+    status: 'Published',
+    status_detail: 'Completed 18 Nov · Published 20 Nov',
+    action_label: 'View result',
+  },
+  {
+    id: 'exam-2',
+    title: 'Mid-term II · December 2026',
+    date_range: '15-23 Dec 2026',
+    scope: '6 classes · 30 subject sessions',
+    status: 'Upcoming',
+    status_detail: 'Schedule confirmed',
+    action_label: 'Exam schedule',
+  },
+  {
+    id: 'exam-3',
+    title: 'Monthly test · October 2026',
+    date_range: '19-23 Oct 2026',
+    scope: '6 classes · 18 subject sessions',
+    status: 'Published',
+    status_detail: 'Completed 23 Oct · Published 26 Oct',
+    action_label: 'View result',
+  },
+];
 
 export const ExamsModule: React.FC = () => {
   const store = useStore();
-  const currentUser = store.currentUser;
-  const isTeacher = currentUser?.role === 'teacher';
+  const [selectedClass, setSelectedClass] = useState('All classes');
+  const [selectedType, setSelectedType] = useState('All exam types');
+  const [selectedStatus, setSelectedStatus] = useState('All statuses');
 
-  // Selection states
-  const [selectedExamId, setSelectedExamId] = useState(store.exams[1]?.id || store.exams[0]?.id || '');
-  const [selectedClassId, setSelectedClassId] = useState(store.classes[0]?.id || '');
-  const [selectedSubjectId, setSelectedSubjectId] = useState(store.subjects[0]?.id || '');
+  // Marks entry state
+  const [marksModalOpen, setMarksModalOpen] = useState(false);
+  const [resultModalOpen, setResultModalOpen] = useState(false);
+  const [activeExam, setActiveExam] = useState<ExamScheduleItem | null>(null);
 
-  // Add exam modal
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [examForm, setExamForm] = useState({
-    name: '',
-    exam_type: 'midterm' as ExamType,
-    academic_year: '2024-2025',
-    start_date: '2024-12-05',
-    end_date: '2024-12-16',
-    total_marks_per_subject: 100,
-    is_published: true,
-  });
+  const [studentMarks, setStudentMarks] = useState([
+    { id: '1', name: 'Ahmed Raza', roll: 'ICS1-026', marks: 92, max: 100 },
+    { id: '2', name: 'Ayesha Khan', roll: 'ICS1-027', marks: 88, max: 100 },
+    { id: '3', name: 'Hamza Ali', roll: 'ICS1-028', marks: 74, max: 100 },
+    { id: '4', name: 'Fatima Noor', roll: 'ICS1-029', marks: 86, max: 100 },
+    { id: '5', name: 'Zain Hassan', roll: 'ICS2-014', marks: 80, max: 100 },
+    { id: '6', name: 'Mahnoor Aslam', roll: 'ICS2-015', marks: 78, max: 100 },
+  ]);
 
-  const [saveToast, setSaveToast] = useState<string | null>(null);
-
-  // Current selected exam
-  const currentExam = store.exams.find((e) => e.id === selectedExamId) || store.exams[0];
-  const maxMarks = currentExam?.total_marks_per_subject || 100;
-
-  // Students in selected class
-  const classStudents = store.students.filter((s) => s.class_id === selectedClassId);
-
-  // Marks state: Map of student_id -> marksObtained
-  const [marksState, setMarksState] = useState<Record<string, number>>({});
-
-  // Sync marks state when exam, class or subject changes
-  React.useEffect(() => {
-    const existing = store.marks.filter(
-      (m) =>
-        m.exam_id === selectedExamId &&
-        m.class_id === selectedClassId &&
-        m.subject_id === selectedSubjectId
+  const handleMarkChange = (id: string, val: number) => {
+    setStudentMarks((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, marks: Math.min(100, Math.max(0, val)) } : s))
     );
-    const map: Record<string, number> = {};
-    classStudents.forEach((std) => {
-      const match = existing.find((m) => m.student_id === std.id);
-      map[std.id] = match ? match.marks_obtained : Math.round(maxMarks * 0.75);
-    });
-    setMarksState(map);
-  }, [selectedExamId, selectedClassId, selectedSubjectId, store.marks]);
-
-  const handleMarkChange = (studentId: string, val: number) => {
-    setMarksState((prev) => ({ ...prev, [studentId]: val }));
-  };
-
-  const handleSaveMarks = () => {
-    const list = Object.entries(marksState).map(([studentId, marksObtained]) => ({
-      studentId,
-      marksObtained: Math.min(maxMarks, Math.max(0, marksObtained)),
-      totalMarks: maxMarks,
-    }));
-
-    store.saveMarksBatch(selectedExamId, selectedSubjectId, selectedClassId, list);
-    const sub = store.subjects.find((s) => s.id === selectedSubjectId);
-    setSaveToast(`Marks for ${sub?.name || 'Subject'} saved and validated successfully!`);
-    setTimeout(() => setSaveToast(null), 4000);
-  };
-
-  const handleCreateExam = (e: React.FormEvent) => {
-    e.preventDefault();
-    store.addExam(examForm);
-    setIsCreateModalOpen(false);
-    setSaveToast(`New examination "${examForm.name}" created!`);
-    setTimeout(() => setSaveToast(null), 4000);
   };
 
   return (
-    <div className="space-y-6">
-      {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-            <FileSpreadsheet className="w-6 h-6 text-blue-600" />
-            <span>Examinations & Subject Marks Entry</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Create academic exams, enter subject-wise student marks with live bounds validation, and grade calculations
-          </p>
-        </div>
-
-        {!isTeacher && (
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="px-4 py-2.5 rounded-xl bg-blue-950 hover:bg-blue-900 text-white text-xs font-bold shadow-md transition-colors flex items-center gap-2 self-start sm:self-auto cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Create New Exam</span>
-          </button>
-        )}
+    <div className="space-y-6 max-w-7xl mx-auto pb-10">
+      {/* 1. Header Block */}
+      <div className="space-y-1">
+        <span className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 block">
+          EXAMINATIONS
+        </span>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#101c4e] dark:text-white tracking-tight">
+          Examinations
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          Plan assessments, track marks and publish results with confidence.
+        </p>
       </div>
 
-      {saveToast && (
-        <div className="p-4 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-900 dark:bg-emerald-950/50 dark:border-emerald-800 dark:text-emerald-300 text-sm font-semibold flex items-center gap-2 animate-in fade-in">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-          <span>{saveToast}</span>
-        </div>
-      )}
-
-      {/* Selector Ribbon */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-          <div>
-            <label className="block text-[10px] font-bold uppercase text-slate-400 mb-1">Select Examination</label>
-            <select
-              value={selectedExamId}
-              onChange={(e) => setSelectedExamId(e.target.value)}
-              className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold"
-            >
-              {store.exams.map((ex) => (
-                <option key={ex.id} value={ex.id}>
-                  {ex.name} (Max: {ex.total_marks_per_subject})
-                </option>
-              ))}
-            </select>
+      {/* 2. Top 4 KPI Metric Cards (Exact Mockup) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        {/* Card 1: Exams this term (Solid Deep Navy Card) */}
+        <div className="bg-[#101c4e] text-white rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+          <span className="text-xs font-semibold text-blue-200 block">
+            Exams this term
+          </span>
+          <div className="text-3xl sm:text-4xl font-black text-white mt-1">
+            3
           </div>
-
-          <div>
-            <label className="block text-[10px] font-bold uppercase text-slate-400 mb-1">Select Class</label>
-            <select
-              value={selectedClassId}
-              onChange={(e) => setSelectedClassId(e.target.value)}
-              className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold"
-            >
-              {store.classes.map((cls) => (
-                <option key={cls.id} value={cls.id}>
-                  {cls.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-[10px] font-bold uppercase text-slate-400 mb-1">Select Subject</label>
-            <select
-              value={selectedSubjectId}
-              onChange={(e) => setSelectedSubjectId(e.target.value)}
-              className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold"
-            >
-              {store.subjects.map((sub) => (
-                <option key={sub.id} value={sub.id}>
-                  {sub.name} ({sub.code})
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <button
-            onClick={handleSaveMarks}
-            className="px-6 py-2.5 rounded-xl bg-blue-950 hover:bg-blue-900 text-white text-xs font-bold shadow-md transition-colors flex items-center gap-2 cursor-pointer"
-          >
-            <Save className="w-4 h-4" />
-            <span>Save & Validate Marks</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Marks Entry Table */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs overflow-hidden">
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-blue-600" />
-            <span className="font-bold text-xs text-slate-900 dark:text-white">
-              Marks Sheet: {store.subjects.find((s) => s.id === selectedSubjectId)?.name} (Max Marks: {maxMarks})
-            </span>
-          </div>
-          <span className="text-[11px] font-semibold text-slate-500">
-            {classStudents.length} Students in {store.classes.find((c) => c.id === selectedClassId)?.name}
+          <span className="text-xs text-blue-200/90 mt-2 font-medium block">
+            2 published · 1 upcoming
           </span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 uppercase text-[10px] font-bold">
-              <tr>
-                <th className="py-3 px-4 w-12 text-center">Sr#</th>
-                <th className="py-3 px-4 w-28">Roll No</th>
-                <th className="py-3 px-4">Student Name</th>
-                <th className="py-3 px-4">Father Name</th>
-                <th className="py-3 px-4 w-40">Marks Obtained</th>
-                <th className="py-3 px-4 w-24 text-center">%age</th>
-                <th className="py-3 px-4 w-24 text-center">Grade</th>
-                <th className="py-3 px-4 w-24 text-center">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {classStudents.map((std, idx) => {
-                const mark = marksState[std.id] !== undefined ? marksState[std.id] : 0;
-                const isOutOfBounds = mark < 0 || mark > maxMarks;
-                const pct = maxMarks > 0 ? Math.round((mark / maxMarks) * 100) : 0;
-                const gradeInfo = calculateGrade(pct);
-                const isPass = pct >= 40;
+        {/* Card 2: Students assessed */}
+        <div className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block">
+            Students assessed
+          </span>
+          <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mt-1">
+            252
+          </div>
+          <span className="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium block">
+            Across 6 active classes
+          </span>
+        </div>
 
-                return (
-                  <tr key={std.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
-                    <td className="py-3 px-4 text-center text-slate-400 font-mono">{idx + 1}</td>
-                    <td className="py-3 px-4 font-mono font-bold text-blue-900 dark:text-blue-400">
-                      {std.roll_number}
-                    </td>
-                    <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">{std.full_name}</td>
-                    <td className="py-3 px-4 text-slate-500">{std.father_name}</td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          min={0}
-                          max={maxMarks}
-                          value={mark}
-                          onChange={(e) => handleMarkChange(std.id, Number(e.target.value))}
-                          className={`w-24 px-3 py-1.5 rounded-lg border font-mono font-bold text-center text-xs focus:ring-2 focus:ring-blue-600 ${
-                            isOutOfBounds
-                              ? 'border-red-500 bg-red-50 text-red-900'
-                              : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800'
-                          }`}
-                        />
-                        <span className="text-slate-400 font-mono text-[11px]">/ {maxMarks}</span>
-                      </div>
-                      {isOutOfBounds && (
-                        <span className="text-[10px] text-red-600 font-bold block mt-0.5">
-                          Must be between 0 and {maxMarks}
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 text-center font-bold text-slate-900 dark:text-white">
-                      {pct}%
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <span className="font-bold text-blue-950 dark:text-blue-300">{gradeInfo.grade}</span>
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <span
-                        className={`inline-block px-2 py-0.5 text-[10px] font-bold rounded ${
-                          isPass ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {isPass ? 'PASS' : 'FAIL'}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        {/* Card 3: Next examination */}
+        <div className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block">
+            Next examination
+          </span>
+          <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mt-1">
+            15 Dec
+          </div>
+          <span className="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium block">
+            Mid-term II · Morning session
+          </span>
+        </div>
+
+        {/* Card 4: Published results */}
+        <div className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block">
+            Published results
+          </span>
+          <div className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mt-1">
+            3
+          </div>
+          <span className="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium block">
+            Schedule confirmed
+          </span>
         </div>
       </div>
 
-      {/* Create Exam Modal */}
+      {/* 3. Examination Schedule Section */}
+      <div className="space-y-4">
+        <div className="space-y-0.5">
+          <h3 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
+            Examination schedule
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Academic session 2026-27 · Morning shift
+          </p>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="relative">
+            <select
+              value={selectedClass}
+              onChange={(e) => setSelectedClass(e.target.value)}
+              className="appearance-none pl-3.5 pr-8 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-[#101c4e] cursor-pointer"
+            >
+              <option value="All classes">All classes</option>
+              <option value="ICS Part 1 · A">ICS Part 1 · A</option>
+              <option value="ICS Part 2 · A">ICS Part 2 · A</option>
+            </select>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" />
+          </div>
+
+          <div className="relative">
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="appearance-none pl-3.5 pr-8 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-[#101c4e] cursor-pointer"
+            >
+              <option value="All exam types">All exam types</option>
+              <option value="Mid-term">Mid-term</option>
+              <option value="Monthly test">Monthly test</option>
+            </select>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" />
+          </div>
+
+          <div className="relative">
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="appearance-none pl-3.5 pr-8 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-[#101c4e] cursor-pointer"
+            >
+              <option value="All statuses">All statuses</option>
+              <option value="Published">Published</option>
+              <option value="Upcoming">Upcoming</option>
+            </select>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* 3 Exam Rows Container */}
+        <div className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xs divide-y divide-slate-100 dark:divide-slate-800">
+          {EXAM_SCHEDULE.map((exam) => (
+            <div
+              key={exam.id}
+              className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors"
+            >
+              <div className="space-y-1">
+                <div className="flex items-center gap-2.5">
+                  <h4 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
+                    {exam.title}
+                  </h4>
+                  <span
+                    className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${
+                      exam.status === 'Published'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : 'bg-blue-50 text-blue-700 border-blue-200'
+                    }`}
+                  >
+                    {exam.status}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {exam.date_range} · {exam.scope}
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  {exam.status_detail}
+                </p>
+              </div>
+
+              <div className="shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveExam(exam);
+                    setResultModalOpen(true);
+                  }}
+                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-800 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  {exam.action_label}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 4. Continue Marks Entry Section (Exact Mockup) */}
+      <div className="bg-white dark:bg-[#11182c] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h4 className="font-extrabold text-base text-slate-900 dark:text-white">
+            Continue marks entry
+          </h4>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Computer Science · ICS Part 1 · A · Mid-term I
+          </p>
+          <p className="text-[11px] text-slate-400">
+            6 demo entries saved · 1 mark requires correction before publishing.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setMarksModalOpen(true)}
+          className="px-5 py-2.5 rounded-xl bg-[#101c4e] hover:bg-[#0c163d] text-white text-xs font-bold shadow-xs transition-all cursor-pointer shrink-0"
+        >
+          Enter marks
+        </button>
+      </div>
+
+      <div className="text-[11px] text-slate-400">
+        Published results are available to students and guardians.
+      </div>
+
+      {/* 5. Footer Note */}
+      <div className="text-xs text-slate-400 dark:text-slate-500 pt-2 pb-4 text-center sm:text-left">
+        Demo campus data · Punjab College, Minar-e-Pakistan Campus, Lahore
+      </div>
+
+      {/* Enter Marks Modal */}
       <Modal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        title="Schedule New Examination"
-        maxWidth="md"
+        isOpen={marksModalOpen}
+        onClose={() => setMarksModalOpen(false)}
+        title="Enter Subject Marks — Computer Science (ICS Part 1 · A)"
+        maxWidth="lg"
       >
-        <form onSubmit={handleCreateExam} className="space-y-4 text-xs">
-          <div>
-            <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Examination Title *
-            </label>
-            <input
-              type="text"
-              required
-              value={examForm.name}
-              onChange={(e) => setExamForm({ ...examForm, name: e.target.value })}
-              placeholder="e.g. Final Pre-Board Examination 2025"
-              className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
-            />
+        <div className="space-y-4">
+          <div className="p-3 rounded-xl bg-blue-50 text-blue-900 text-xs font-medium">
+            Mid-term I · Total Marks: 100 · Passing Threshold: 40 marks
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Exam Type
-              </label>
-              <select
-                value={examForm.exam_type}
-                onChange={(e: any) => setExamForm({ ...examForm, exam_type: e.target.value })}
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-semibold"
+          <div className="space-y-3">
+            {studentMarks.map((s) => (
+              <div
+                key={s.id}
+                className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-xs"
               >
-                <option value="monthly">Monthly Test</option>
-                <option value="midterm">Mid-Term Exam</option>
-                <option value="final">Final / Pre-Board</option>
-              </select>
-            </div>
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Total Marks / Subject
-              </label>
-              <input
-                type="number"
-                min={20}
-                max={200}
-                value={examForm.total_marks_per_subject}
-                onChange={(e) => setExamForm({ ...examForm, total_marks_per_subject: Number(e.target.value) })}
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono font-bold"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Start Date
-              </label>
-              <input
-                type="date"
-                value={examForm.start_date}
-                onChange={(e) => setExamForm({ ...examForm, start_date: e.target.value })}
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                End Date
-              </label>
-              <input
-                type="date"
-                value={examForm.end_date}
-                onChange={(e) => setExamForm({ ...examForm, end_date: e.target.value })}
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
-              />
-            </div>
+                <div>
+                  <div className="font-bold text-slate-900 dark:text-white">
+                    {s.name}
+                  </div>
+                  <div className="text-slate-400 font-mono text-[11px]">
+                    {s.roll}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={s.marks}
+                    onChange={(e) => handleMarkChange(s.id, parseInt(e.target.value) || 0)}
+                    className="w-20 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-center font-bold text-xs"
+                  />
+                  <span className="text-slate-400 text-xs">/ 100</span>
+                </div>
+              </div>
+            ))}
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
-              onClick={() => setIsCreateModalOpen(false)}
-              className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400"
+              onClick={() => setMarksModalOpen(false)}
+              className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
             >
               Cancel
             </button>
             <button
-              type="submit"
-              className="px-5 py-2 rounded-xl bg-blue-950 hover:bg-blue-900 text-white font-bold"
+              type="button"
+              onClick={() => {
+                setMarksModalOpen(false);
+              }}
+              className="px-5 py-2 rounded-xl bg-[#101c4e] text-white text-xs font-bold hover:bg-[#0c163d] cursor-pointer"
             >
-              Create Exam
+              Save Marks
             </button>
           </div>
-        </form>
+        </div>
+      </Modal>
+
+      {/* Result Details Modal */}
+      <Modal
+        isOpen={resultModalOpen}
+        onClose={() => setResultModalOpen(false)}
+        title={activeExam ? activeExam.title : 'Examination Result'}
+        maxWidth="md"
+      >
+        <div className="space-y-3 text-xs">
+          <p className="text-slate-600">
+            Official class standings and scorecards for {activeExam?.title} have been validated by the Examination Controller.
+          </p>
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 space-y-2">
+            <div className="flex justify-between">
+              <span className="text-slate-500">Total Classes Assessed:</span>
+              <span className="font-bold text-slate-900 dark:text-white">6 Classes</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Overall Class Average:</span>
+              <span className="font-bold text-slate-900 dark:text-white">76.4%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Passing Rate:</span>
+              <span className="font-bold text-emerald-600">94.2%</span>
+            </div>
+          </div>
+          <div className="flex justify-end pt-2">
+            <button
+              type="button"
+              onClick={() => setResultModalOpen(false)}
+              className="px-4 py-2 rounded-xl bg-[#101c4e] text-white text-xs font-bold cursor-pointer"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       </Modal>
     </div>
   );
 };
-

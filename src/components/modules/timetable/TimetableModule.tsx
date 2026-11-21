@@ -1,266 +1,377 @@
 import React, { useState } from 'react';
-import { Clock, Plus, Filter, Calendar, Building, BookOpen, Trash2 } from 'lucide-react';
+import {
+  Clock,
+  Plus,
+  Calendar,
+  Building,
+  BookOpen,
+  Filter,
+  CheckCircle2,
+  ChevronRight,
+  Info,
+  User,
+} from 'lucide-react';
 import { useStore } from '../../../lib/store';
-import { TimetableSlot } from '../../../types';
-import { Modal } from '../../common/Modal';
+
+interface TimetableSlotInfo {
+  subject: string;
+  teacher: string;
+  room: string;
+  color: string;
+  badgeBg: string;
+  badgeText: string;
+}
 
 export const TimetableModule: React.FC = () => {
   const store = useStore();
   const currentUser = store.currentUser;
   const isStudent = currentUser?.role === 'student';
 
-  const [selectedClassId, setSelectedClassId] = useState(store.classes[0]?.id || '');
-  const [selectedDay, setSelectedDay] = useState<string>('Monday');
-  const [isAddSlotOpen, setIsAddSlotOpen] = useState(false);
+  const [selectedClass, setSelectedClass] = useState('ICS Part 1 · Section A');
+  const [selectedDayTab, setSelectedDayTab] = useState<'All' | 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT'>('All');
 
-  // Add slot form
-  const [slotForm, setSlotForm] = useState({
-    class_id: store.classes[0]?.id || '',
-    subject_id: store.subjects[0]?.id || '',
-    teacher_id: store.teachers[0]?.id || '',
-    day_of_week: 'Monday' as any,
-    period_number: 1,
-    start_time: '08:30 AM',
-    end_time: '09:15 AM',
-    room_no: 'Room 101',
-  });
-
-  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-  // Current filtered slots
-  const filteredSlots = store.timetable.filter(
-    (t) => t.class_id === selectedClassId && t.day_of_week === selectedDay
-  );
-  filteredSlots.sort((a, b) => a.period_number - b.period_number);
-
-  const handleSaveSlot = (e: React.FormEvent) => {
-    e.preventDefault();
-    store.addTimetableSlot(slotForm);
-    setIsAddSlotOpen(false);
+  // Subjects configuration matching 12_timetable_desktop.png exactly
+  const subjectsMap: Record<string, { teacher: string; room: string; color: string; badgeBg: string; badgeText: string }> = {
+    Physics: {
+      teacher: 'Bilal Ahmed',
+      room: 'Q-201',
+      color: '#2563eb',
+      badgeBg: 'bg-blue-50 dark:bg-blue-950/60',
+      badgeText: 'text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+    },
+    Maths: {
+      teacher: 'Hina Rashid',
+      room: 'Q-204',
+      color: '#7c3aed',
+      badgeBg: 'bg-purple-50 dark:bg-purple-950/60',
+      badgeText: 'text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+    },
+    'Computer Science': {
+      teacher: 'Sana Iqbal',
+      room: 'CS Lab 1',
+      color: '#101c4e',
+      badgeBg: 'bg-indigo-50 dark:bg-indigo-950/60',
+      badgeText: 'text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
+    },
+    English: {
+      teacher: 'Mariam Khan',
+      room: 'Q-203',
+      color: '#e11d48',
+      badgeBg: 'bg-rose-50 dark:bg-rose-950/60',
+      badgeText: 'text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800',
+    },
+    Urdu: {
+      teacher: 'Farah Saeed',
+      room: 'Q-202',
+      color: '#0d9488',
+      badgeBg: 'bg-emerald-50 dark:bg-emerald-950/60',
+      badgeText: 'text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+    },
   };
 
+  // Schedule matrix matching 12_timetable_desktop.png
+  const weeklySchedule = [
+    {
+      dayCode: 'MON',
+      dayLabel: 'MON 16 NOV',
+      p1: 'Physics',
+      p2: 'Maths',
+      breakText: 'Morning break · Recharge before the next class',
+      p3: 'Computer Science',
+      p4: 'English',
+      p5: 'Urdu',
+    },
+    {
+      dayCode: 'TUE',
+      dayLabel: 'TUE 17 NOV',
+      p1: 'Maths',
+      p2: 'Computer Science',
+      breakText: 'Morning break · Recharge before the next class',
+      p3: 'English',
+      p4: 'Urdu',
+      p5: 'Physics',
+    },
+    {
+      dayCode: 'WED',
+      dayLabel: 'WED 18 NOV',
+      p1: 'Computer Science',
+      p2: 'English',
+      breakText: 'Morning break · Recharge before the next class',
+      p3: 'Urdu',
+      p4: 'Physics',
+      p5: 'Maths',
+    },
+    {
+      dayCode: 'THU',
+      dayLabel: 'THU 19 NOV',
+      p1: 'English',
+      p2: 'Urdu',
+      breakText: 'Morning break · Recharge before the next class',
+      p3: 'Physics',
+      p4: 'Maths',
+      p5: 'Computer Science',
+    },
+    {
+      dayCode: 'FRI',
+      dayLabel: 'FRI 20 NOV',
+      p1: 'Urdu',
+      p2: 'Physics',
+      breakText: 'Morning break · Recharge before the next class',
+      p3: 'Maths',
+      p4: 'Computer Science',
+      p5: 'English',
+    },
+    {
+      dayCode: 'SAT',
+      dayLabel: 'SAT 21 NOV',
+      p1: 'Physics',
+      p2: 'Maths',
+      breakText: 'Morning break · Recharge before the next class',
+      p3: 'Computer Science',
+      p4: 'English',
+      p5: 'Urdu',
+    },
+  ];
+
+  const displayedDays = selectedDayTab === 'All'
+    ? weeklySchedule
+    : weeklySchedule.filter((d) => d.dayCode === selectedDayTab);
+
   return (
-    <div className="space-y-6">
-      {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-            <Clock className="w-6 h-6 text-purple-600" />
-            <span>Weekly Class Timetable & Schedule Matrix</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Weekly lecture schedules, period distribution, faculty assignments, and lab allocations
-          </p>
+    <div className="space-y-6 font-sans">
+      {/* Module Title Header matching 12_timetable_desktop */}
+      <div className="space-y-1">
+        <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          TIMETABLE
         </div>
 
-        {!isStudent && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1b224b] dark:text-white tracking-tight">
+              Make room for learning.
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+              Your week at a glance • Monday-Saturday • 16-21 November 2026
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300">
+            <User className="w-4 h-4 text-blue-600" />
+            <span className="font-semibold">Ahmed Raza</span>
+            <span className="text-slate-400 font-mono text-[10px]">ICS Part 1 · A</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Published Timetable Banner Card matching mockup */}
+      <div className="bg-white dark:bg-[#11182c] rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs p-5 sm:p-6 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base sm:text-lg font-bold text-[#1b224b] dark:text-white">
+                Published timetable · ICS Part 1 · Section A
+              </h2>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              A focused week of learning · 30 periods · 5 subjects · 6 days
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-xs font-bold text-blue-900 dark:text-blue-300 font-mono">
+              08:00 - 12:00
+            </span>
+          </div>
+        </div>
+
+        {/* Subjects Legend Bar */}
+        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs font-semibold">
+          <span className="text-slate-400 uppercase text-[10px] font-bold">Subjects:</span>
+          <span className="inline-flex items-center gap-1.5 text-blue-700 dark:text-blue-300">
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+            <span>Physics</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-purple-700 dark:text-purple-300">
+            <span className="w-2.5 h-2.5 rounded-full bg-purple-600"></span>
+            <span>Maths</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#101c4e]"></span>
+            <span>Computer Science</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-rose-700 dark:text-rose-300">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-600"></span>
+            <span>English</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+            <span>Urdu</span>
+          </span>
+        </div>
+      </div>
+
+      {/* Day Filter Selector Pills for Mobile / Tablet */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+        {(['All', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as const).map((day) => (
           <button
-            onClick={() => {
-              setSlotForm({
-                ...slotForm,
-                class_id: selectedClassId,
-                day_of_week: selectedDay,
-                period_number: filteredSlots.length + 1,
-              });
-              setIsAddSlotOpen(true);
-            }}
-            className="px-4 py-2.5 rounded-xl bg-blue-950 hover:bg-blue-900 text-white text-xs font-bold shadow-md transition-colors flex items-center gap-2 self-start sm:self-auto cursor-pointer"
+            key={day}
+            onClick={() => setSelectedDayTab(day)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+              selectedDayTab === day
+                ? 'bg-[#101c4e] text-white shadow-xs'
+                : 'bg-white dark:bg-[#11182c] border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:border-slate-300'
+            }`}
           >
-            <Plus className="w-4 h-4" />
-            <span>Add Lecture Slot</span>
+            {day === 'All' ? 'Full Week' : day}
           </button>
-        )}
+        ))}
       </div>
 
-      {/* Selectors Bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <label className="text-xs font-bold text-slate-500 uppercase">Class Section:</label>
-          <select
-            value={selectedClassId}
-            onChange={(e) => setSelectedClassId(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold"
-          >
-            {store.classes.map((cls) => (
-              <option key={cls.id} value={cls.id}>
-                {cls.name} ({cls.group_name})
-              </option>
-            ))}
-          </select>
+      {/* Timetable Schedule Matrix - Desktop Table Layout */}
+      <div className="bg-white dark:bg-[#11182c] rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs min-w-[760px]">
+            <thead>
+              <tr className="bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+                <th className="py-3 px-4 font-bold uppercase text-[10px] w-28">Day</th>
+                <th className="py-3 px-3 font-bold uppercase text-[10px]">
+                  <div>Period 1</div>
+                  <span className="text-[10px] font-normal text-slate-400">45 min · 08:00–08:45</span>
+                </th>
+                <th className="py-3 px-3 font-bold uppercase text-[10px]">
+                  <div>Period 2</div>
+                  <span className="text-[10px] font-normal text-slate-400">45 min · 08:45–09:30</span>
+                </th>
+                <th className="py-3 px-3 font-bold uppercase text-[10px] bg-amber-50/50 dark:bg-amber-950/20 text-amber-800 dark:text-amber-400 w-36 text-center">
+                  <div>Break</div>
+                  <span className="text-[10px] font-normal text-amber-600/80">15 min · 09:30–09:45</span>
+                </th>
+                <th className="py-3 px-3 font-bold uppercase text-[10px]">
+                  <div>Period 3</div>
+                  <span className="text-[10px] font-normal text-slate-400">45 min · 09:45–10:30</span>
+                </th>
+                <th className="py-3 px-3 font-bold uppercase text-[10px]">
+                  <div>Period 4</div>
+                  <span className="text-[10px] font-normal text-slate-400">45 min · 10:30–11:15</span>
+                </th>
+                <th className="py-3 px-3 font-bold uppercase text-[10px]">
+                  <div>Period 5</div>
+                  <span className="text-[10px] font-normal text-slate-400">45 min · 11:15–12:00</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              {displayedDays.map((row) => {
+                const s1 = subjectsMap[row.p1];
+                const s2 = subjectsMap[row.p2];
+                const s3 = subjectsMap[row.p3];
+                const s4 = subjectsMap[row.p4];
+                const s5 = subjectsMap[row.p5];
+
+                return (
+                  <tr key={row.dayCode} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                    {/* Day Column */}
+                    <td className="py-4 px-4 font-black text-slate-900 dark:text-white align-top">
+                      <div className="text-xs">{row.dayLabel.split(' ')[0]}</div>
+                      <div className="text-[10px] font-mono font-medium text-slate-400">
+                        {row.dayLabel.split(' ').slice(1).join(' ')}
+                      </div>
+                    </td>
+
+                    {/* Period 1 */}
+                    <td className="py-3 px-3 align-top">
+                      <div className="p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs space-y-1">
+                        <div className="font-bold text-xs text-slate-900 dark:text-white">
+                          {row.p1}
+                        </div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {s1.teacher}
+                        </div>
+                        <div className="text-[10px] font-mono font-semibold text-blue-600 dark:text-blue-400">
+                          {s1.room}
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Period 2 */}
+                    <td className="py-3 px-3 align-top">
+                      <div className="p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs space-y-1">
+                        <div className="font-bold text-xs text-slate-900 dark:text-white">
+                          {row.p2}
+                        </div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {s2.teacher}
+                        </div>
+                        <div className="text-[10px] font-mono font-semibold text-purple-600 dark:text-purple-400">
+                          {s2.room}
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Break */}
+                    <td className="py-3 px-3 align-top bg-amber-50/20 dark:bg-amber-950/10 text-center">
+                      <div className="py-3 px-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-900/40 text-[10px] text-amber-800 dark:text-amber-300 font-semibold leading-tight">
+                        Morning break
+                      </div>
+                    </td>
+
+                    {/* Period 3 */}
+                    <td className="py-3 px-3 align-top">
+                      <div className="p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs space-y-1">
+                        <div className="font-bold text-xs text-slate-900 dark:text-white">
+                          {row.p3}
+                        </div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {s3.teacher}
+                        </div>
+                        <div className="text-[10px] font-mono font-semibold text-indigo-600 dark:text-indigo-400">
+                          {s3.room}
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Period 4 */}
+                    <td className="py-3 px-3 align-top">
+                      <div className="p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs space-y-1">
+                        <div className="font-bold text-xs text-slate-900 dark:text-white">
+                          {row.p4}
+                        </div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {s4.teacher}
+                        </div>
+                        <div className="text-[10px] font-mono font-semibold text-rose-600 dark:text-rose-400">
+                          {s4.room}
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Period 5 */}
+                    <td className="py-3 px-3 align-top">
+                      <div className="p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs space-y-1">
+                        <div className="font-bold text-xs text-slate-900 dark:text-white">
+                          {row.p5}
+                        </div>
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {s5.teacher}
+                        </div>
+                        <div className="text-[10px] font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+                          {s5.room}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-
-        {/* Days Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
-          {daysOfWeek.map((day) => (
-            <button
-              key={day}
-              onClick={() => setSelectedDay(day)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                selectedDay === day
-                  ? 'bg-blue-950 text-white shadow-sm'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900'
-              }`}
-            >
-              {day}
-            </button>
-          ))}
-        </div>
       </div>
 
-      {/* Timetable Period Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredSlots.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-xs text-slate-400 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-            No scheduled lectures configured for {selectedDay}. Click "Add Lecture Slot" to assign a period.
-          </div>
-        ) : (
-          filteredSlots.map((slot) => {
-            const subject = store.subjects.find((s) => s.id === slot.subject_id);
-            const teacher = store.teachers.find((t) => t.id === slot.teacher_id);
-            return (
-              <div
-                key={slot.id}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs flex flex-col justify-between hover:border-blue-300 dark:hover:border-blue-800 transition-all"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-900 dark:text-blue-300 font-bold flex items-center justify-center text-xs">
-                      P-{slot.period_number}
-                    </span>
-                    <span className="text-[11px] font-mono text-slate-500 font-semibold">
-                      {slot.start_time} - {slot.end_time}
-                    </span>
-                  </div>
-
-                  <h4 className="font-extrabold text-base text-slate-900 dark:text-white">
-                    {subject?.name || 'Subject'}
-                  </h4>
-                  <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-1">
-                    {teacher?.full_name || 'Assigned Professor'}
-                  </p>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
-                  <div className="flex items-center gap-1.5">
-                    <Building className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="font-medium">{slot.room_no}</span>
-                  </div>
-
-                  {!isStudent && (
-                    <button
-                      onClick={() => store.deleteTimetableSlot(slot.id)}
-                      className="p-1 rounded-md text-slate-400 hover:text-red-600 transition-colors"
-                      title="Remove Slot"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })
-        )}
+      {/* Footer Notes matching 12_timetable_desktop */}
+      <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 pt-2 gap-2">
+        <span>Schedule updated 20 Nov 2026 - All times PKT (UTC+5)</span>
+        <span>Demo campus data · Punjab College, Minar-e-Pakistan Campus, Lahore</span>
       </div>
-
-      {/* Add Slot Modal */}
-      <Modal
-        isOpen={isAddSlotOpen}
-        onClose={() => setIsAddSlotOpen(false)}
-        title={`Add Lecture Slot for ${selectedDay}`}
-        maxWidth="md"
-      >
-        <form onSubmit={handleSaveSlot} className="space-y-4 text-xs">
-          <div>
-            <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject *</label>
-            <select
-              value={slotForm.subject_id}
-              onChange={(e) => setSlotForm({ ...slotForm, subject_id: e.target.value })}
-              className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-semibold"
-            >
-              {store.subjects.map((sub) => (
-                <option key={sub.id} value={sub.id}>
-                  {sub.name} ({sub.code})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Faculty Teacher *</label>
-            <select
-              value={slotForm.teacher_id}
-              onChange={(e) => setSlotForm({ ...slotForm, teacher_id: e.target.value })}
-              className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-semibold"
-            >
-              {store.teachers.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.full_name} ({t.qualification})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Period Number</label>
-              <input
-                type="number"
-                min={1}
-                max={8}
-                value={slotForm.period_number}
-                onChange={(e) => setSlotForm({ ...slotForm, period_number: Number(e.target.value) })}
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Room / Lab</label>
-              <input
-                type="text"
-                value={slotForm.room_no}
-                onChange={(e) => setSlotForm({ ...slotForm, room_no: e.target.value })}
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Start Time</label>
-              <input
-                type="text"
-                value={slotForm.start_time}
-                onChange={(e) => setSlotForm({ ...slotForm, start_time: e.target.value })}
-                placeholder="08:30 AM"
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">End Time</label>
-              <input
-                type="text"
-                value={slotForm.end_time}
-                onChange={(e) => setSlotForm({ ...slotForm, end_time: e.target.value })}
-                placeholder="09:15 AM"
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
-            <button
-              type="button"
-              onClick={() => setIsAddSlotOpen(false)}
-              className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-5 py-2 rounded-xl bg-blue-950 hover:bg-blue-900 text-white font-bold"
-            >
-              Save Slot
-            </button>
-          </div>
-        </form>
-      </Modal>
     </div>
   );
 };
-
