@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   UserPlus,
   Search,
@@ -19,6 +19,7 @@ import {
   Check,
   Upload,
   ChevronDown,
+  FileText,
 } from 'lucide-react';
 import { useStore } from '../../../lib/store';
 import { AdmissionApplication, AcademicGroup } from '../../../types';
@@ -54,6 +55,7 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
   // Selected application for detail modal
   const [selectedApp, setSelectedApp] = useState<AdmissionApplication | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Online Form Fields (Structured as per mockup)
   const [formData, setFormData] = useState({
@@ -75,7 +77,9 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
     previousBoard: 'BISE Lahore',
     groupName: 'ICS' as AcademicGroup,
     shift: 'Morning • 8:00am – 1:30pm',
-    photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+    photoUrl: '/ayesha-student.jpg',
+    photoFileName: 'ayesha-ahmed.jpg',
+    photoFileSize: '248 KB',
   });
 
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim());
@@ -732,58 +736,144 @@ export const AdmissionsModule: React.FC<AdmissionsModuleProps> = ({
                 </div>
               )}
 
-              {/* STEP 4: PHOTO UPLOAD */}
+              {/* STEP 4: PHOTO UPLOAD (EXACT MOCKUP) */}
               {currentStep === 4 && (
                 <div className="space-y-6">
+                  {/* Step Header */}
                   <div className="space-y-1">
                     <h2 className="text-xl sm:text-2xl font-black text-[#1b224b] tracking-tight">
-                      Applicant Photograph
+                      Put a face to your future.
                     </h2>
                     <p className="text-xs text-slate-500">
-                      Recent passport-size photo with blue or white background for college roll slip.
+                      Upload a recent, clear passport-size photograph.
                     </p>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-2xl bg-slate-50 border border-slate-200">
-                    <img
-                      src={formData.photoUrl}
-                      alt="Student"
-                      className="w-28 h-28 rounded-2xl object-cover ring-4 ring-[#232766]/20 shadow-md"
-                    />
-                    <div className="space-y-2 text-center sm:text-left">
-                      <span className="text-xs font-bold text-slate-800 block">Photo Preview Verified</span>
-                      <p className="text-[11px] text-slate-500 leading-relaxed max-w-sm">
-                        Passport-size photo meeting BISE Lahore criteria (JPG or PNG, max 2MB).
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() =>
+                  {/* Hidden File Input for Real Photo Uploads */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
                           setFormData({
                             ...formData,
-                            photoUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150',
-                          })
-                        }
-                        className="px-3.5 py-1.5 rounded-lg bg-white border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer"
+                            photoUrl: reader.result as string,
+                            photoFileName: file.name,
+                            photoFileSize: `${Math.round(file.size / 1024)} KB`,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+
+                  {/* Dashed Upload Box Container */}
+                  <div className="border-2 border-dashed border-slate-200/90 rounded-2xl p-5 sm:p-7 bg-[#fafcff]/60">
+                    {/* Desktop View: Horizontal Flex */}
+                    <div className="hidden sm:flex items-center gap-6">
+                      <img
+                        src={formData.photoUrl}
+                        alt="Applicant photograph"
+                        className="w-24 h-32 rounded-2xl object-cover shadow-xs border border-slate-200/90 shrink-0"
+                      />
+                      <div className="space-y-2">
+                        <div className="w-8 h-8 rounded-lg bg-slate-100/90 flex items-center justify-center text-slate-700">
+                          <Upload className="w-4 h-4" />
+                        </div>
+                        <div className="space-y-0.5">
+                          <h3 className="font-extrabold text-sm sm:text-base text-slate-900 leading-tight">
+                            A clear photo. A great first impression.
+                          </h3>
+                          <p className="text-xs text-slate-500">
+                            Use a plain background with your face clearly visible.
+                          </p>
+                          <p className="text-xs text-slate-400">
+                            JPG or PNG • Maximum 2 MB • Recommended 600 × 800px
+                          </p>
+                        </div>
+                        <div className="pt-1">
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="px-4 py-2 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-2xs transition-colors cursor-pointer"
+                          >
+                            Choose a different photo
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mobile View: Centered Vertical Stack */}
+                    <div className="sm:hidden flex flex-col items-center text-center space-y-3.5 py-2">
+                      <img
+                        src={formData.photoUrl}
+                        alt="Applicant photograph"
+                        className="w-28 h-36 rounded-2xl object-cover shadow-xs border border-slate-200/90"
+                      />
+                      <div className="space-y-1">
+                        <h3 className="font-extrabold text-sm text-slate-900">
+                          Looking good, {formData.firstName || 'Ayesha'}.
+                        </h3>
+                        <p className="text-xs text-slate-400">
+                          JPG or PNG • Maximum 2 MB
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="w-full py-2.5 px-4 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-2xs transition-colors cursor-pointer"
                       >
-                        Change Photo Sample
+                        Choose a different photo
                       </button>
                     </div>
                   </div>
 
-                  <div className="pt-6 border-t border-slate-100 flex items-center justify-between gap-3">
+                  {/* Uploaded File Status Row */}
+                  <div className="p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-white flex items-center justify-between shadow-2xs">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-600">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <div className="text-xs font-bold text-slate-800">
+                          {formData.photoFileName || 'ayesha-ahmed.jpg'}
+                        </div>
+                        <div className="text-[11px] text-emerald-600 font-medium">
+                          {formData.photoFileSize || '248 KB'} • Upload complete
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-6 h-6 rounded-full bg-emerald-50 flex items-center justify-center">
+                      <Check className="w-4 h-4 text-emerald-600 stroke-[2.5]" />
+                    </div>
+                  </div>
+
+                  {/* Photo Purpose Disclaimer */}
+                  <p className="text-xs text-slate-400">
+                    Your photo is used only for your admission record and student identification.
+                  </p>
+
+                  {/* Form Footer Actions */}
+                  <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                     <button
                       type="button"
                       onClick={() => setCurrentStep(3)}
-                      className="px-5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                      className="order-2 sm:order-1 px-6 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors text-center cursor-pointer"
                     >
-                      ← Back to group selection
+                      Back
                     </button>
+
                     <button
                       type="button"
                       onClick={() => setCurrentStep(5)}
-                      className="px-6 py-2.5 rounded-xl bg-[#1b224b] hover:bg-[#121633] text-white text-xs sm:text-sm font-bold shadow-md cursor-pointer"
+                      className="order-1 sm:order-2 px-6 py-2.5 rounded-xl bg-[#1b224b] hover:bg-[#121633] text-white text-xs sm:text-sm font-bold shadow-md transition-all text-center cursor-pointer"
                     >
-                      Review & Submit
+                      Review application
                     </button>
                   </div>
                 </div>
