@@ -30,56 +30,70 @@ export const TimetableModule: React.FC = () => {
   const [selectedClass, setSelectedClass] = useState('ICS Part 1 · Section A');
   const [selectedDayTab, setSelectedDayTab] = useState<'All' | 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT'>('All');
 
-  // Subjects configuration matching 12_timetable_desktop.png exactly
+  // Subjects configuration matching requested faculty & subjects
   const subjectsMap: Record<string, { teacher: string; room: string; color: string; badgeBg: string; badgeText: string }> = {
-    Physics: {
-      teacher: 'Bilal Ahmed',
-      room: 'Q-201',
-      color: '#2563eb',
-      badgeBg: 'bg-blue-50 dark:bg-blue-950/60',
-      badgeText: 'text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
-    },
-    Maths: {
-      teacher: 'Hina Rashid',
-      room: 'Q-204',
-      color: '#7c3aed',
-      badgeBg: 'bg-purple-50 dark:bg-purple-950/60',
-      badgeText: 'text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
-    },
     'Computer Science': {
-      teacher: 'Sana Iqbal',
+      teacher: 'Sir Faisal',
       room: 'CS Lab 1',
       color: '#101c4e',
       badgeBg: 'bg-indigo-50 dark:bg-indigo-950/60',
       badgeText: 'text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
     },
+    Maths: {
+      teacher: 'Sir Amin',
+      room: 'Q-204',
+      color: '#7c3aed',
+      badgeBg: 'bg-purple-50 dark:bg-purple-950/60',
+      badgeText: 'text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+    },
     English: {
-      teacher: 'Mariam Khan',
+      teacher: 'Sir Asad',
       room: 'Q-203',
       color: '#e11d48',
       badgeBg: 'bg-rose-50 dark:bg-rose-950/60',
       badgeText: 'text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800',
     },
     Urdu: {
-      teacher: 'Farah Saeed',
+      teacher: 'Sir Yousaf',
       room: 'Q-202',
       color: '#0d9488',
       badgeBg: 'bg-emerald-50 dark:bg-emerald-950/60',
       badgeText: 'text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
     },
+    Statistics: {
+      teacher: 'Sir Hamza',
+      room: 'Q-205',
+      color: '#2563eb',
+      badgeBg: 'bg-blue-50 dark:bg-blue-950/60',
+      badgeText: 'text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+    },
+    'Pak Study': {
+      teacher: 'Miss Nomana',
+      room: 'Q-206',
+      color: '#059669',
+      badgeBg: 'bg-teal-50 dark:bg-teal-950/60',
+      badgeText: 'text-teal-700 dark:text-teal-300 border-teal-200 dark:border-teal-800',
+    },
+    'T.Q.M': {
+      teacher: 'Sir Bilal',
+      room: 'Q-201',
+      color: '#d97706',
+      badgeBg: 'bg-amber-50 dark:bg-amber-950/60',
+      badgeText: 'text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+    },
   };
 
-  // Schedule matrix matching 12_timetable_desktop.png
+  // Schedule matrix matching requested 7 subjects
   const weeklySchedule = [
     {
       dayCode: 'MON',
       dayLabel: 'MON 16 NOV',
-      p1: 'Physics',
-      p2: 'Maths',
+      p1: 'English',
+      p2: 'Urdu',
       breakText: 'Morning break · Recharge before the next class',
       p3: 'Computer Science',
-      p4: 'English',
-      p5: 'Urdu',
+      p4: 'Maths',
+      p5: 'Statistics',
     },
     {
       dayCode: 'TUE',
@@ -89,7 +103,7 @@ export const TimetableModule: React.FC = () => {
       breakText: 'Morning break · Recharge before the next class',
       p3: 'English',
       p4: 'Urdu',
-      p5: 'Physics',
+      p5: 'Pak Study',
     },
     {
       dayCode: 'WED',
@@ -98,8 +112,8 @@ export const TimetableModule: React.FC = () => {
       p2: 'English',
       breakText: 'Morning break · Recharge before the next class',
       p3: 'Urdu',
-      p4: 'Physics',
-      p5: 'Maths',
+      p4: 'Statistics',
+      p5: 'T.Q.M',
     },
     {
       dayCode: 'THU',
@@ -107,7 +121,7 @@ export const TimetableModule: React.FC = () => {
       p1: 'English',
       p2: 'Urdu',
       breakText: 'Morning break · Recharge before the next class',
-      p3: 'Physics',
+      p3: 'Pak Study',
       p4: 'Maths',
       p5: 'Computer Science',
     },
@@ -115,7 +129,7 @@ export const TimetableModule: React.FC = () => {
       dayCode: 'FRI',
       dayLabel: 'FRI 20 NOV',
       p1: 'Urdu',
-      p2: 'Physics',
+      p2: 'T.Q.M',
       breakText: 'Morning break · Recharge before the next class',
       p3: 'Maths',
       p4: 'Computer Science',
@@ -124,7 +138,7 @@ export const TimetableModule: React.FC = () => {
     {
       dayCode: 'SAT',
       dayLabel: 'SAT 21 NOV',
-      p1: 'Physics',
+      p1: 'Statistics',
       p2: 'Maths',
       breakText: 'Morning break · Recharge before the next class',
       p3: 'Computer Science',
@@ -157,7 +171,7 @@ export const TimetableModule: React.FC = () => {
 
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300">
             <User className="w-4 h-4 text-blue-600" />
-            <span className="font-semibold">Ahmed Raza</span>
+            <span className="font-semibold">Abdul Rehman</span>
             <span className="text-slate-400 font-mono text-[10px]">ICS Part 1 · A</span>
           </div>
         </div>
@@ -173,7 +187,7 @@ export const TimetableModule: React.FC = () => {
               </h2>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              A focused week of learning · 30 periods · 5 subjects · 6 days
+              A focused week of learning · 30 periods · 7 subjects · 6 days
             </p>
           </div>
 

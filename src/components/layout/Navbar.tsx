@@ -201,7 +201,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
               <div className="hidden sm:block text-left">
                 <span className="text-xs font-bold text-slate-900 dark:text-white block leading-tight">
-                  {role === 'teacher' ? 'Sana Iqbal' : role === 'student' ? (currentUser?.full_name || 'Ahmed Raza') : 'Campus Admin'}
+                  {role === 'teacher' ? (currentUser?.full_name || 'Sir Yousaf') : role === 'student' ? (currentUser?.full_name || 'Abdul Rehman') : 'Campus Admin'}
                 </span>
                 <span className="text-[10px] text-slate-400 block">
                   {role === 'teacher' ? 'Teacher' : role === 'student' ? 'ICS Part 1 · A' : 'Administrator'}

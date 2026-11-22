@@ -135,7 +135,7 @@ export const NoticesModule: React.FC<{ onNavigateToResults?: () => void }> = ({
         },
       ],
       description:
-        'Join us on 28 November in the main courtyard, 9:00 AM—1:00 PM. Register your project with Sana Iqbal by 25 November; teams of up to three are welcome.',
+        'Join us on 28 November in the main courtyard, 9:00 AM—1:00 PM. Register your project with Sir Yousaf by 25 November; teams of up to three are welcome.',
       metaBadge: 'Event 28 Nov',
       office: 'Student Affairs',
       date: '21 Nov 2026',

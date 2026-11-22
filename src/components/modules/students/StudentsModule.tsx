@@ -35,14 +35,14 @@ interface StudentRecord {
 const DEFAULT_MOCK_STUDENTS: StudentRecord[] = [
   {
     id: 'std-1',
-    full_name: 'Ahmed Raza',
+    full_name: 'Abdul Rehman',
     campus: 'Punjab College · Lahore',
     roll_number: 'ICS1-026',
     class_name: 'ICS Part 1 · A',
-    email: 'ahmed.raza@example.com',
+    email: 'abdul.rehman@example.com',
     phone: '0300 123 4526',
     status: 'Active',
-    father_name: 'Raza Ullah',
+    father_name: 'Rehman Ullah',
     dob: '2008-04-12',
     gender: 'Male',
   },

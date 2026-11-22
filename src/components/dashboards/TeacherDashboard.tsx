@@ -75,7 +75,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
             SATURDAY, 21 NOVEMBER 2026
           </span>
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-            Good morning, Sana.
+            Good morning, Sir Yousaf.
           </h2>
           <p className="text-xs sm:text-sm text-blue-100/90 font-medium">
             3 classes today. A little preparation, a lasting impact.
@@ -242,18 +242,18 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
               {/* Row 1 */}
               <div className="flex items-center justify-between py-1 text-xs">
                 <span className="font-bold text-slate-900 dark:text-white w-28 shrink-0">
-                  09:45 – 10:30
+                  08:45 – 09:30
                 </span>
                 <div className="flex-1 px-3">
                   <div className="font-bold text-slate-900 dark:text-white">
                     ICS Part 1 · A
                   </div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">
-                    Introduction to algorithms
+                    Urdu Adab & Ghazaliat
                   </div>
                 </div>
                 <span className="text-slate-500 dark:text-slate-400 text-right shrink-0">
-                  CS Lab 1
+                  Q-202
                 </span>
               </div>
 
@@ -269,11 +269,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
                     ICS Part 2 · A
                   </div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">
-                    Relational databases
+                    Urdu Qawaid & Insha
                   </div>
                 </div>
                 <span className="text-slate-500 dark:text-slate-400 text-right shrink-0">
-                  CS Lab 2
+                  Q-202
                 </span>
               </div>
 
@@ -289,11 +289,11 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
                     ICS Part 1 · B
                   </div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">
-                    Flowcharts & pseudocode
+                    Urdu Mazmoon Nigari
                   </div>
                 </div>
                 <span className="text-slate-500 dark:text-slate-400 text-right shrink-0">
-                  CS Lab 1
+                  Q-202
                 </span>
               </div>
             </div>
@@ -316,7 +316,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
                 Quick attendance
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Computer Science · Today, 21 Nov
+                Urdu · Today, 21 Nov
               </p>
             </div>
 
@@ -454,10 +454,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
                 <FileText className="w-5 h-5 text-slate-600 dark:text-slate-400 shrink-0 mt-0.5 stroke-[1.8]" />
                 <div className="min-w-0 flex-1">
                   <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate group-hover:text-blue-600 transition-colors">
-                    Programming Fundamentals.pdf
+                    Urdu Adab & Qawaid Notes.pdf
                   </div>
                   <div className="text-xs text-slate-400 dark:text-slate-500">
-                    ICS Part 1 · A & B · Sana Iqbal · 1.8 MB
+                    ICS Part 1 · A & B · Sir Yousaf · 1.8 MB
                   </div>
                 </div>
               </div>
@@ -470,10 +470,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
                 <FileText className="w-5 h-5 text-slate-600 dark:text-slate-400 shrink-0 mt-0.5 stroke-[1.8]" />
                 <div className="min-w-0 flex-1">
                   <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate group-hover:text-blue-600 transition-colors">
-                    Database Practice Set.pdf
+                    Urdu Essay Writing Guide.pdf
                   </div>
                   <div className="text-xs text-slate-400 dark:text-slate-500">
-                    ICS Part 2 · A · Sana Iqbal · 1.1 MB
+                    ICS Part 2 · A · Sir Yousaf · 1.1 MB
                   </div>
                 </div>
               </div>
@@ -486,10 +486,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
                 <FileText className="w-5 h-5 text-slate-600 dark:text-slate-400 shrink-0 mt-0.5 stroke-[1.8]" />
                 <div className="min-w-0 flex-1">
                   <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate group-hover:text-blue-600 transition-colors">
-                    Algorithms Worksheet.pdf
+                    Urdu Ghazaliat Tashreeh.pdf
                   </div>
                   <div className="text-xs text-slate-400 dark:text-slate-500">
-                    ICS Part 1 · A & B · Sana Iqbal · 840 KB
+                    ICS Part 1 · A & B · Sir Yousaf · 840 KB
                   </div>
                 </div>
               </div>
@@ -521,16 +521,16 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
         <div className="space-y-4">
           <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#f4f7fe] dark:bg-slate-800/50">
             <img
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150"
-              alt="Sana Iqbal"
+              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
+              alt="Sir Yousaf"
               className="w-16 h-16 rounded-2xl object-cover ring-2 ring-[#101c4e]"
             />
             <div>
               <h3 className="font-black text-lg text-slate-900 dark:text-white">
-                Sana Iqbal
+                Sir Yousaf
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-                Senior Lecturer · Department of Computer Science
+                Senior Lecturer · Department of Urdu
               </p>
               <div className="text-[11px] font-bold text-[#101c4e] dark:text-blue-400 mt-1">
                 PCL-TCH-01 · Punjab College Lahore

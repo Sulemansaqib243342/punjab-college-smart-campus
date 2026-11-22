@@ -29,52 +29,72 @@ interface TeacherItem {
 const INITIAL_TEACHERS: TeacherItem[] = [
   {
     id: 'tch-1',
-    full_name: 'Sana Iqbal',
-    qualification: 'MS Computer Science',
+    full_name: 'Sir Yousaf',
+    qualification: 'MPhil Urdu',
     staff_id: 'FAC-001',
-    department: 'Computer Science',
-    email: 'sana.iqbal@example.com',
+    department: 'Urdu',
+    email: 'sir.yousaf@punjabcollege.edu.pk',
     phone: '0300 555 0101',
     status: 'Active',
   },
   {
     id: 'tch-2',
-    full_name: 'Bilal Ahmed',
-    qualification: 'MPhil Physics',
+    full_name: 'Sir Faisal',
+    qualification: 'MS Computer Science',
     staff_id: 'FAC-002',
-    department: 'Physics',
-    email: 'bilal.ahmed@example.com',
+    department: 'Computer Science',
+    email: 'sir.faisal@punjabcollege.edu.pk',
     phone: '0301 555 0102',
     status: 'Active',
   },
   {
     id: 'tch-3',
-    full_name: 'Hina Rashid',
-    qualification: 'MPhil Mathematics',
+    full_name: 'Sir Asad',
+    qualification: 'MA English Literature',
     staff_id: 'FAC-003',
-    department: 'Mathematics',
-    email: 'hina.rashid@example.com',
+    department: 'English',
+    email: 'sir.asad@punjabcollege.edu.pk',
     phone: '0302 555 0103',
     status: 'Active',
   },
   {
     id: 'tch-4',
-    full_name: 'Mariam Khan',
-    qualification: 'MA English',
+    full_name: 'Sir Amin',
+    qualification: 'MPhil Mathematics',
     staff_id: 'FAC-004',
-    department: 'English',
-    email: 'mariam.khan@example.com',
+    department: 'Mathematics',
+    email: 'sir.amin@punjabcollege.edu.pk',
     phone: '0303 555 0104',
     status: 'Active',
   },
   {
     id: 'tch-5',
-    full_name: 'Farah Saeed',
-    qualification: 'MPhil Urdu',
+    full_name: 'Sir Hamza',
+    qualification: 'MPhil Statistics',
     staff_id: 'FAC-005',
-    department: 'Urdu',
-    email: 'farah.saeed@example.com',
+    department: 'Statistics',
+    email: 'sir.hamza@punjabcollege.edu.pk',
     phone: '0304 555 0105',
+    status: 'Active',
+  },
+  {
+    id: 'tch-6',
+    full_name: 'Miss Nomana',
+    qualification: 'MA Pakistan Studies',
+    staff_id: 'FAC-006',
+    department: 'Pakistan Studies',
+    email: 'miss.nomana@punjabcollege.edu.pk',
+    phone: '0305 555 0106',
+    status: 'Active',
+  },
+  {
+    id: 'tch-7',
+    full_name: 'Sir Bilal',
+    qualification: 'MA Islamic Studies / TQM',
+    staff_id: 'FAC-007',
+    department: 'T.Q.M',
+    email: 'sir.bilal@punjabcollege.edu.pk',
+    phone: '0306 555 0107',
     status: 'Active',
   },
 ];
@@ -293,11 +313,13 @@ export const TeachersModule: React.FC = () => {
                 className="appearance-none pl-3.5 pr-8 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-[#101c4e] cursor-pointer"
               >
                 <option value="All departments">All departments</option>
-                <option value="Computer Science">Computer Science</option>
-                <option value="Physics">Physics</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="English">English</option>
                 <option value="Urdu">Urdu</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="English">English</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Statistics">Statistics</option>
+                <option value="Pakistan Studies">Pakistan Studies</option>
+                <option value="T.Q.M">T.Q.M</option>
               </select>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" />
             </div>
@@ -570,7 +592,7 @@ export const TeachersModule: React.FC = () => {
               required
               value={formName}
               onChange={(e) => setFormName(e.target.value)}
-              placeholder="e.g. Prof. Sana Iqbal"
+              placeholder="e.g. Sir Yousaf"
               className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs focus:ring-2 focus:ring-[#101c4e]"
             />
           </div>

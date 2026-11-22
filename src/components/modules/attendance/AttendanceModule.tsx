@@ -24,7 +24,7 @@ interface RegisterRow {
 }
 
 const INITIAL_REGISTER: RegisterRow[] = [
-  { id: '1', name: 'Ahmed Raza', roll: 'ICS1-026', attendance_rate: 92, status: 'present' },
+  { id: '1', name: 'Abdul Rehman', roll: 'ICS1-026', attendance_rate: 92, status: 'present' },
   { id: '2', name: 'Ayesha Khan', roll: 'ICS1-027', attendance_rate: 96, status: 'present' },
   { id: '3', name: 'Hamza Ali', roll: 'ICS1-028', attendance_rate: 72, status: 'present' },
   { id: '4', name: 'Fatima Noor', roll: 'ICS1-029', attendance_rate: 88, status: 'present' },
@@ -84,7 +84,7 @@ export const AttendanceModule: React.FC = () => {
             </div>
           </div>
           <span className="text-[11px] text-blue-200/80 mt-2 font-medium block">
-            42 enrolled · Sana Iqbal
+            42 enrolled · Sir Yousaf
           </span>
         </div>
 
@@ -306,7 +306,7 @@ export const AttendanceModule: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
-                Ahmed Raza · monthly record
+                Abdul Rehman · monthly record
               </h3>
               <p className="text-xs text-slate-400">
                 November 2026 · ICS Part 1 · A

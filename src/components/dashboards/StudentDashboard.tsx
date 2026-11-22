@@ -44,7 +44,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
           STUDENT DASHBOARD
         </span>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-[#101c4e] dark:text-white tracking-tight">
-          Keep moving forward, Ahmed.
+          Keep moving forward, Abdul Rehman.
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
           Your progress, your plans and everything you need for a great college day.
@@ -58,7 +58,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
             SATURDAY, 21 NOVEMBER 2026
           </span>
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-            Keep going, Ahmed.
+            Keep going, Abdul Rehman.
           </h2>
           <p className="text-xs sm:text-sm text-blue-200/90 font-medium">
             ICS Part 1 · A / Roll no. ICS1-026
@@ -241,41 +241,41 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
             {/* 4 Lecture Slots */}
             <div className="space-y-3.5 my-4">
-              {/* Slot 1: Physics */}
+              {/* Slot 1: English */}
               <div className="flex items-center justify-between py-1 text-xs">
                 <span className="font-bold text-slate-900 dark:text-white w-28 shrink-0">
                   08:00 – 08:45
                 </span>
                 <div className="flex-1 px-3">
                   <div className="font-bold text-slate-900 dark:text-white">
-                    Physics
+                    English
                   </div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">
-                    Bilal Ahmed
+                    Sir Asad
                   </div>
                 </div>
                 <span className="text-slate-500 dark:text-slate-400 text-right shrink-0">
-                  Q-201
+                  Q-203
                 </span>
               </div>
 
               <div className="border-t border-slate-100 dark:border-slate-800" />
 
-              {/* Slot 2: Mathematics */}
+              {/* Slot 2: Urdu */}
               <div className="flex items-center justify-between py-1 text-xs">
                 <span className="font-bold text-slate-900 dark:text-white w-28 shrink-0">
                   08:45 – 09:30
                 </span>
                 <div className="flex-1 px-3">
                   <div className="font-bold text-slate-900 dark:text-white">
-                    Mathematics
+                    Urdu
                   </div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">
-                    Hina Rashid
+                    Sir Yousaf
                   </div>
                 </div>
                 <span className="text-slate-500 dark:text-slate-400 text-right shrink-0">
-                  Q-204
+                  Q-202
                 </span>
               </div>
 
@@ -291,7 +291,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
                     Computer Science
                   </div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">
-                    Sana Iqbal
+                    Sir Faisal
                   </div>
                 </div>
                 <span className="text-slate-500 dark:text-slate-400 text-right shrink-0">
@@ -301,21 +301,21 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
               <div className="border-t border-slate-100 dark:border-slate-800" />
 
-              {/* Slot 4: English */}
+              {/* Slot 4: Mathematics */}
               <div className="flex items-center justify-between py-1 text-xs">
                 <span className="font-bold text-slate-900 dark:text-white w-28 shrink-0">
                   10:30 – 11:15
                 </span>
                 <div className="flex-1 px-3">
                   <div className="font-bold text-slate-900 dark:text-white">
-                    English
+                    Mathematics
                   </div>
                   <div className="text-slate-500 dark:text-slate-400 text-[11px]">
-                    Mariam Khan
+                    Sir Amin
                   </div>
                 </div>
                 <span className="text-slate-500 dark:text-slate-400 text-right shrink-0">
-                  Q-203
+                  Q-204
                 </span>
               </div>
             </div>
@@ -419,7 +419,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
               Programming Fundamentals.pdf
             </div>
             <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-              Sana Iqbal · 1.8 MB
+              Sir Faisal · 1.8 MB
             </div>
           </div>
 
@@ -430,10 +430,10 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
           >
             <FileText className="w-5 h-5 text-slate-600 dark:text-slate-400 mb-2.5 stroke-[1.8]" />
             <div className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white truncate group-hover:text-blue-600 transition-colors">
-              Vectors & Scalars.pdf
+              Urdu Adab & Qawaid Notes.pdf
             </div>
             <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-              Bilal Ahmed · 1.8 MB
+              Sir Yousaf · 1.2 MB
             </div>
           </div>
 
@@ -447,7 +447,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
               Essay Writing Guide.docx
             </div>
             <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-              Mariam Khan · 640 KB
+              Sir Asad · 640 KB
             </div>
           </div>
         </div>
@@ -479,12 +479,12 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
           <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#f4f7fe] dark:bg-slate-800/50">
             <img
               src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150"
-              alt="Ahmed Raza"
+              alt="Abdul Rehman"
               className="w-16 h-16 rounded-2xl object-cover ring-2 ring-[#101c4e]"
             />
             <div>
               <h3 className="font-black text-lg text-slate-900 dark:text-white">
-                Ahmed Raza
+                Abdul Rehman
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
                 ICS Part 1 · Section A · Computer Science Group

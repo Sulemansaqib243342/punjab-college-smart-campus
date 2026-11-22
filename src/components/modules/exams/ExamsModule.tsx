@@ -67,7 +67,7 @@ export const ExamsModule: React.FC = () => {
   const [activeExam, setActiveExam] = useState<ExamScheduleItem | null>(null);
 
   const [studentMarks, setStudentMarks] = useState([
-    { id: '1', name: 'Ahmed Raza', roll: 'ICS1-026', marks: 92, max: 100 },
+    { id: '1', name: 'Abdul Rehman', roll: 'ICS1-026', marks: 92, max: 100 },
     { id: '2', name: 'Ayesha Khan', roll: 'ICS1-027', marks: 88, max: 100 },
     { id: '3', name: 'Hamza Ali', roll: 'ICS1-028', marks: 74, max: 100 },
     { id: '4', name: 'Fatima Noor', roll: 'ICS1-029', marks: 86, max: 100 },

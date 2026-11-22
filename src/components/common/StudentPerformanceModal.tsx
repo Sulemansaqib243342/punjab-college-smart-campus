@@ -37,19 +37,19 @@ export const StudentPerformanceModal: React.FC<StudentPerformanceModalProps> = (
   onClose,
 }) => {
   const store = useStore();
-  const currentStudent = student || store.students[0]; // Ahmed Raza default
+  const currentStudent = student || store.students[0]; // Abdul Rehman default
 
   const handlePrint = () => {
     window.print();
   };
 
-  // Subject comparison data matching 15_report_desktop.png exactly
+  // Subject comparison data matching requested subjects
   const subjectPerformanceData = [
-    { subject: 'Physics', studentScore: 82, classAvg: 74, diff: '+8' },
-    { subject: 'Maths', studentScore: 76, classAvg: 70, diff: '+6' },
     { subject: 'Computer Science', studentScore: 92, classAvg: 80, diff: '+12' },
-    { subject: 'English', studentScore: 84, classAvg: 76, diff: '+8' },
     { subject: 'Urdu', studentScore: 86, classAvg: 80, diff: '+6' },
+    { subject: 'English', studentScore: 84, classAvg: 76, diff: '+8' },
+    { subject: 'Maths', studentScore: 76, classAvg: 70, diff: '+6' },
+    { subject: 'Statistics', studentScore: 82, classAvg: 74, diff: '+8' },
   ];
 
   // Steady progress trend
@@ -207,7 +207,7 @@ export const StudentPerformanceModal: React.FC<StudentPerformanceModalProps> = (
               <div className="flex items-center gap-4 text-xs font-semibold">
                 <span className="inline-flex items-center gap-1.5 text-slate-900 dark:text-white">
                   <span className="w-3 h-3 rounded-xs bg-[#101c4e]"></span>
-                  <span>Ahmed ({currentStudent.full_name.split(' ')[0]})</span>
+                  <span>{currentStudent.full_name}</span>
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-slate-400">
                   <span className="w-3 h-3 rounded-xs bg-slate-300 dark:bg-slate-700"></span>
@@ -252,7 +252,7 @@ export const StudentPerformanceModal: React.FC<StudentPerformanceModalProps> = (
 
             {/* Callout matching mockup */}
             <div className="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/60 text-xs text-blue-900 dark:text-blue-300">
-              <strong>Ahmed:</strong> All five subject scores are above their class averages. Largest subject lead:{' '}
+              <strong>Abdul Rehman:</strong> All five subject scores are above their class averages. Largest subject lead:{' '}
               <span className="font-bold">Computer Science (+12 points)</span>.
             </div>
           </div>

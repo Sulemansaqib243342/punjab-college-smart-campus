@@ -38,7 +38,7 @@ export const MaterialsModule: React.FC = () => {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [downloadToast, setDownloadToast] = useState<string | null>(null);
 
-  // Exact 6 study materials matching 13_materials_desktop.png
+  // Study materials matching requested faculty & subjects
   const studyMaterialsList: StudyItem[] = [
     {
       id: 'mat-1',
@@ -49,18 +49,18 @@ export const MaterialsModule: React.FC = () => {
       description: 'Chapter 3 · Variables, data types & operators',
       fileSize: '1.8 MB',
       date: '20 Nov 2026',
-      sharedBy: 'Sana Iqbal',
+      sharedBy: 'Sir Faisal',
     },
     {
       id: 'mat-2',
-      title: 'Vectors & Scalars.pdf',
-      subject: 'Physics',
-      subjectCode: 'Physics',
+      title: 'Urdu Adab & Qawaid Notes.pdf',
+      subject: 'Urdu',
+      subjectCode: 'Urdu',
       fileType: 'PDF',
-      description: 'Chapter 2 · Worked examples and key concepts',
-      fileSize: '2.4 MB',
+      description: 'Selected prose · Revision notes and questions',
+      fileSize: '1.2 MB',
       date: '19 Nov 2026',
-      sharedBy: 'Bilal Ahmed',
+      sharedBy: 'Sir Yousaf',
     },
     {
       id: 'mat-3',
@@ -71,41 +71,51 @@ export const MaterialsModule: React.FC = () => {
       description: 'Structure stronger arguments in your next essay',
       fileSize: '640 KB',
       date: '18 Nov 2026',
-      sharedBy: 'Mariam Khan',
+      sharedBy: 'Sir Asad',
     },
     {
       id: 'mat-4',
-      title: 'Urdu Adab Notes.pdf',
-      subject: 'Urdu',
-      subjectCode: 'Urdu',
-      fileType: 'PDF',
-      description: 'Selected prose · Revision notes and questions',
-      fileSize: '1.2 MB',
-      date: '18 Nov 2026',
-      sharedBy: 'Farah Saeed',
-    },
-    {
-      id: 'mat-5',
       title: 'Maths Matrices Practice.pdf',
       subject: 'Maths',
       subjectCode: 'Maths',
       fileType: 'PDF',
       description: 'Exercise 3.1 · Practice problems with answers',
       fileSize: '980 KB',
+      date: '18 Nov 2026',
+      sharedBy: 'Sir Amin',
+    },
+    {
+      id: 'mat-5',
+      title: 'Statistics Probability & Measures.pdf',
+      subject: 'Statistics',
+      subjectCode: 'Stats',
+      fileType: 'PDF',
+      description: 'Measures of Dispersion & Probability Distributions',
+      fileSize: '2.1 MB',
       date: '17 Nov 2026',
-      sharedBy: 'Hina Rashid',
+      sharedBy: 'Sir Hamza',
     },
     {
       id: 'mat-6',
-      title: 'Physics Lab Reference',
-      subject: 'Physics',
-      subjectCode: 'Physics',
-      fileType: 'External URL',
-      description: 'phet.colorado.edu · Interactive physics resources',
-      fileSize: 'External URL',
+      title: 'Pakistan Studies Ideology & Constitution.pdf',
+      subject: 'Pak Study',
+      subjectCode: 'PakSt',
+      fileType: 'PDF',
+      description: 'Historical background, Two-Nation Theory & Constitution notes',
+      fileSize: '1.5 MB',
       date: '16 Nov 2026',
-      sharedBy: 'Bilal Ahmed',
-      url: 'https://phet.colorado.edu/',
+      sharedBy: 'Miss Nomana',
+    },
+    {
+      id: 'mat-7',
+      title: 'T.Q.M Selected Surahs & Translation Guide.pdf',
+      subject: 'T.Q.M',
+      subjectCode: 'TQM',
+      fileType: 'PDF',
+      description: 'Tarjuma-tul-Quran Majeed syllabus, vocabulary & tafseer points',
+      fileSize: '1.4 MB',
+      date: '15 Nov 2026',
+      sharedBy: 'Sir Bilal',
     },
   ];
 
@@ -115,7 +125,7 @@ export const MaterialsModule: React.FC = () => {
     description: '',
     subject: 'Computer Science',
     fileType: 'PDF' as const,
-    sharedBy: currentUser?.full_name || 'Sana Iqbal',
+    sharedBy: currentUser?.full_name || 'Sir Yousaf',
   });
 
   const handleDownload = (item: StudyItem) => {
@@ -178,7 +188,7 @@ export const MaterialsModule: React.FC = () => {
 
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300">
             <GraduationCap className="w-4 h-4 text-emerald-600" />
-            <span className="font-semibold">{currentUser?.full_name || 'Sana Iqbal'}</span>
+            <span className="font-semibold">{currentUser?.full_name || 'Sir Yousaf'}</span>
             <span className="text-slate-400 font-mono text-[10px] uppercase">({currentUser?.role || 'Teacher'})</span>
           </div>
         </div>
@@ -203,7 +213,7 @@ export const MaterialsModule: React.FC = () => {
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            6 resources · ICS Part 1, Section A
+            7 resources · ICS Part 1, Section A
           </p>
         </div>
 
@@ -222,7 +232,7 @@ export const MaterialsModule: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         {/* Subject Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
-          {['All', 'Physics', 'Computer Science', 'Maths', 'English', 'Urdu'].map((sub) => (
+          {['All', 'English', 'Urdu', 'Statistics', 'Maths', 'Computer Science', 'Pak Study', 'T.Q.M'].map((sub) => (
             <button
               key={sub}
               onClick={() => setSelectedSubject(sub)}

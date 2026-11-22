@@ -46,7 +46,7 @@ export const FeesModule: React.FC = () => {
   const mockTableVouchers = [
     {
       id: 'mock-v-1',
-      studentName: 'Ahmed Raza',
+      studentName: 'Abdul Rehman',
       rollNo: 'ICS1-026',
       voucherNo: 'PC-FEE-2611-026',
       month: 'November 2026',
@@ -57,7 +57,7 @@ export const FeesModule: React.FC = () => {
       status: 'partial' as const,
       statusLabel: 'Partial',
       subtext: '4 days left to due date',
-      originalVoucherId: 'v-nov-ahmed',
+      originalVoucherId: 'v-nov-abdul-rehman',
     },
     {
       id: 'mock-v-2',
@@ -91,7 +91,7 @@ export const FeesModule: React.FC = () => {
     },
     {
       id: 'mock-v-4',
-      studentName: 'Ahmed Raza',
+      studentName: 'Abdul Rehman',
       rollNo: 'ICS1-026',
       voucherNo: 'PC-FEE-2610-026',
       month: 'October 2026',
@@ -102,7 +102,7 @@ export const FeesModule: React.FC = () => {
       status: 'paid' as const,
       statusLabel: 'Paid',
       subtext: 'Settled',
-      originalVoucherId: 'v-oct-ahmed',
+      originalVoucherId: 'v-oct-abdul-rehman',
     },
   ];
 
@@ -409,7 +409,7 @@ export const FeesModule: React.FC = () => {
               <div className="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/60 text-xs text-blue-900 dark:text-blue-300 flex items-start sm:items-center gap-2">
                 <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5 sm:mt-0" />
                 <span>
-                  <strong>Ahmed:</strong> Rs 4,000 remains due by 25 Nov. This November balance is not overdue.
+                  <strong>Abdul Rehman:</strong> Rs 4,000 remains due by 25 Nov. This November balance is not overdue.
                 </span>
               </div>
             </div>

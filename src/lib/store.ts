@@ -35,7 +35,7 @@ import {
 } from './mockData';
 import { calculateGrade } from './utils';
 
-const STORAGE_KEY_PREFIX = 'smart_campus_v1_';
+const STORAGE_KEY_PREFIX = 'smart_campus_v2_';
 
 function getStoredItem<T>(key: string, defaultValue: T): T {
   try {
